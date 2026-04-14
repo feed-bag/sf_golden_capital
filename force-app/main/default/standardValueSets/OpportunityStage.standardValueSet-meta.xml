@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<StandardValueSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <sorted>false</sorted>
+    <standardValue>
+        <fullName>App In</fullName>
+        <default>false</default>
+        <description>new application</description>
+        <label>App In</label>
+        <closed>false</closed>
+        <forecastCategory>Pipeline</forecastCategory>
+        <probability>10</probability>
+        <won>false</won>
+    </standardValue>
+    <standardValue>
+        <fullName>Sales Follow Up</fullName>
+        <default>false</default>
+        <description>The Sales Representative is gathering additional information and packaging the items needed to submit to the funding source.</description>
+        <label>Sales Follow Up</label>
+        <closed>false</closed>
+        <forecastCategory>Pipeline</forecastCategory>
+        <probability>15</probability>
+        <won>false</won>
+    </standardValue>
+    <standardValue>
+        <fullName>On Hold</fullName>
+        <default>false</default>
+        <label>On Hold</label>
+        <closed>false</closed>
+        <forecastCategory>Pipeline</forecastCategory>
+        <probability>20</probability>
+        <won>false</won>
+    </standardValue>
+    <standardValue>
+        <fullName>Internal Review</fullName>
+        <default>false</default>
+        <label>Internal Review</label>
+        <closed>false</closed>
+        <forecastCategory>Pipeline</forecastCategory>
+        <probability>25</probability>
+        <won>false</won>
+    </standardValue>
+    <standardValue>
+        <fullName>Submitted</fullName>
+        <default>false</default>
+        <label>Submitted</label>
+        <closed>false</closed>
+        <forecastCategory>Pipeline</forecastCategory>
+        <probability>30</probability>
+        <won>false</won>
+    </standardValue>
+    <standardValue>
+        <fullName>Approved</fullName>
+        <default>false</default>
+        <label>Approved</label>
+        <closed>false</closed>
+        <forecastCategory>Pipeline</forecastCategory>
+        <probability>50</probability>
+        <won>false</won>
+    </standardValue>
+    <standardValue>
+        <fullName>Pre Docs</fullName>
+        <default>false</default>
+        <description>The deal is ready for documents. All items needed to generate documents have been obtained. The Documentation team is packaging the documentation request to request documents from the funding source.</description>
+        <label>Pre Docs</label>
+        <closed>false</closed>
+        <forecastCategory>Pipeline</forecastCategory>
+        <probability>60</probability>
+        <won>false</won>
+    </standardValue>
+    <standardValue>
+        <fullName>Docs Requested</fullName>
+        <default>false</default>
+        <description>All documentation necessary for a formal documentation request have been obtained, the documentation request has been submitted to the funding source and the documents are being generated.</description>
+        <label>Docs Requested</label>
+        <closed>false</closed>
+        <forecastCategory>Pipeline</forecastCategory>
+        <probability>75</probability>
+        <won>false</won>
+    </standardValue>
+    <standardValue>
+        <fullName>Docs Out</fullName>
+        <default>false</default>
+        <description>The documents have been sent to the customer to sign. The Sales Representative is working with the customer on gathering the necessary information to fund the deal.</description>
+        <label>Docs Out</label>
+        <closed>false</closed>
+        <forecastCategory>Pipeline</forecastCategory>
+        <probability>80</probability>
+        <won>false</won>
+    </standardValue>
+    <standardValue>
+        <fullName>Funding Request Sent</fullName>
+        <default>false</default>
+        <description>All items needed to fund the transaction have been reviewed by Funding Team and a formal funding request has been submitted to the funding partner.</description>
+        <label>Funding Request Sent</label>
+        <closed>false</closed>
+        <forecastCategory>Pipeline</forecastCategory>
+        <probability>90</probability>
+        <won>false</won>
+    </standardValue>
+    <standardValue>
+        <fullName>Funded</fullName>
+        <default>false</default>
+        <label>Funded</label>
+        <closed>false</closed>
+        <forecastCategory>Forecast</forecastCategory>
+        <probability>90</probability>
+        <won>false</won>
+    </standardValue>
+    <standardValue>
+        <fullName>FPC</fullName>
+        <default>false</default>
+        <description>Funded and Pending Commission to GC</description>
+        <label>FPC</label>
+        <closed>false</closed>
+        <forecastCategory>Pipeline</forecastCategory>
+        <probability>95</probability>
+        <won>false</won>
+    </standardValue>
+    <standardValue>
+        <fullName>Fully Funded</fullName>
+        <default>false</default>
+        <description>Deal is fully funded and Golden Capital has been paid.</description>
+        <label>Fully Funded</label>
+        <closed>true</closed>
+        <forecastCategory>Closed</forecastCategory>
+        <probability>100</probability>
+        <won>true</won>
+    </standardValue>
+    <standardValue>
+        <fullName>Dead</fullName>
+        <default>false</default>
+        <label>Dead</label>
+        <closed>true</closed>
+        <forecastCategory>Omitted</forecastCategory>
+        <probability>0</probability>
+        <won>false</won>
+    </standardValue>
+</StandardValueSet>

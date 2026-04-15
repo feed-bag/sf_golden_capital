@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Intake_Source__c</fullName>
+    <label>Intake Source</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Jotform</fullName>
+                <default>false</default>
+                <label>Jotform</label>
+            </value>
+            <value>
+                <fullName>Partner Portal</fullName>
+                <default>false</default>
+                <label>Partner Portal</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

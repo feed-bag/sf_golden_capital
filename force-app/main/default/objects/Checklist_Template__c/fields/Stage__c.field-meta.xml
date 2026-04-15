@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Stage__c</fullName>
+    <label>Stage</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>App In</fullName>
+                <default>false</default>
+                <label>App In</label>
+            </value>
+            <value>
+                <fullName>Pre Docs</fullName>
+                <default>false</default>
+                <label>Pre Docs</label>
+            </value>
+            <value>
+                <fullName>Docs Out</fullName>
+                <default>false</default>
+                <label>Docs Out</label>
+            </value>
+            <value>
+                <fullName>Approved</fullName>
+                <default>false</default>
+                <label>Approved</label>
+            </value>
+            <value>
+                <fullName>Docs Requested</fullName>
+                <default>false</default>
+                <label>Docs Requested</label>
+            </value>
+            <value>
+                <fullName>Approved/Terms Review</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Approved/Terms Review</label>
+            </value>
+            <value>
+                <fullName>Ready for Docs</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Ready for Docs</label>
+            </value>
+            <value>
+                <fullName>Docs</fullName>
+                <default>false</default>
+                <isActive>false</isActive>
+                <label>Docs</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

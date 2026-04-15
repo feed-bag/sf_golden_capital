@@ -1,0 +1,79 @@
+.checklist-group {
+    border: 1px solid #dddbda;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.group-header {
+    background-color: #f3f3f3;
+    cursor: pointer;
+    user-select: none;
+    border-bottom: 1px solid #dddbda;
+}
+
+.group-header:hover {
+    background-color: #e8e8e8;
+}
+
+.group-items {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.checklist-item {
+    border-bottom: 1px solid #f3f3f3;
+}
+
+.checklist-item:last-child {
+    border-bottom: none;
+}
+
+.item-checkbox {
+    flex: 1;
+}
+
+.progress-badge {
+    font-size: 0.75rem;
+    color: #706e6b;
+    font-weight: 600;
+}
+
+.progress-complete {
+    color: #2e844a;
+}
+
+.dealer-badge {
+    --sds-c-badge-color-background: #e8f4fd;
+    --sds-c-badge-text-color: #0070d2;
+    font-size: 0.7rem;
+}
+
+.due-date {
+    font-size: 0.75rem;
+    color: #706e6b;
+    white-space: nowrap;
+}
+
+.due-overdue {
+    color: #c23934;
+    font-weight: 600;
+}
+
+.due-today {
+    color: #dd7a01;
+    font-weight: 600;
+}
+
+.delete-btn {
+    opacity: 0;
+    transition: opacity 0.15s;
+}
+
+.checklist-item:hover .delete-btn {
+    opacity: 1;
+}
+
+.add-section-btn {
+    font-size: 0.75rem;
+}

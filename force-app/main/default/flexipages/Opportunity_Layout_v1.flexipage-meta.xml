@@ -834,31 +834,7 @@
                 <identifier>flexipage_tab3</identifier>
             </componentInstance>
         </itemInstances>
-        <itemInstances>
-            <componentInstance>
-                <componentInstanceProperties>
-                    <name>body</name>
-                    <value>Facet-checklist-lwc-tab-body</value>
-                </componentInstanceProperties>
-                <componentInstanceProperties>
-                    <name>title</name>
-                    <value>Checklist</value>
-                </componentInstanceProperties>
-                <componentName>flexipage:tab</componentName>
-                <identifier>flexipage_tab_checklist</identifier>
-            </componentInstance>
-        </itemInstances>
         <name>Facet-dc83f721-d4ba-4a78-af09-e7f17c23318d</name>
-        <type>Facet</type>
-    </flexiPageRegions>
-    <flexiPageRegions>
-        <itemInstances>
-            <componentInstance>
-                <componentName>c:opportunityChecklist</componentName>
-                <identifier>c_opportunityChecklist</identifier>
-            </componentInstance>
-        </itemInstances>
-        <name>Facet-checklist-lwc-tab-body</name>
         <type>Facet</type>
     </flexiPageRegions>
     <flexiPageRegions>
@@ -922,12 +898,8 @@
         </itemInstances>
         <itemInstances>
             <componentInstance>
-                <componentInstanceProperties>
-                    <name>ShowDetails</name>
-                    <value>true</value>
-                </componentInstanceProperties>
-                <componentName>kt_checklist:checklistIndex</componentName>
-                <identifier>kt_checklist_checklistIndex</identifier>
+                <componentName>opportunityChecklist</componentName>
+                <identifier>c_opportunityChecklist</identifier>
             </componentInstance>
         </itemInstances>
         <name>sidebar</name>

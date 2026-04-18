@@ -4,37 +4,61 @@
             <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
         </template>
         <template if:true={error}>
-            <p class="error-msg">Error loading pipeline data.</p>
+            <p class="kb-error">Error loading pipeline data.</p>
         </template>
         <template if:true={columns}>
-            <div class="kanban-board">
+            <div class="kb-board">
                 <template for:each={columns} for:item="col">
                     <div key={col.stage}
-                         class="kanban-column"
+                         class="kb-column"
                          data-stage={col.stage}
                          ondragover={handleDragOver}
+                         ondragleave={handleDragLeave}
                          ondrop={handleDrop}>
-                        <div class="column-header">
-                            <span class="column-title">{col.stage}</span>
-                            <span class="column-count">{col.count}</span>
+                        <div class="kb-col-header">
+                            <span class="kb-col-title">{col.stage}</span>
+                            <span class="kb-col-count">{col.count}</span>
                         </div>
-                        <div class="column-body">
+                        <div class="kb-col-body">
                             <template for:each={col.opportunities} for:item="opp">
                                 <div key={opp.Id}
-                                     class="kanban-card"
+                                     class="kb-card"
                                      draggable="true"
                                      data-id={opp.Id}
                                      ondragstart={handleDragStart}>
-                                    <div class="card-header">
-                                        <a href={opp.url} target="_blank">{opp.accountName}</a>
+                                    <div class="kb-stage-strip" style={opp.stageStripStyle}></div>
+                                    <div class="kb-title-row">
+                                        <a class="kb-title" href={opp.url} target="_blank">{opp.accountName}</a>
+                                        <span class="kb-uid">{opp.uniqueId}</span>
                                     </div>
-                                    <div class="card-pills">
-                                        <template for:each={opp.pills} for:item="pill">
-                                            <span key={pill.key}
-                                                  class={pill.pillClass}>
-                                                {pill.label}
-                                            </span>
-                                        </template>
+                                    <template if:true={opp.tags.length}>
+                                        <div class="kb-tags">
+                                            <template for:each={opp.tags} for:item="tag">
+                                                <span key={tag.key} class={tag.tagClass}>{tag.label}</span>
+                                            </template>
+                                        </div>
+                                    </template>
+                                    <template if:true={opp.amountFormatted}>
+                                        <p class="kb-amount">{opp.amountFormatted}</p>
+                                    </template>
+                                    <div class="kb-progress-wrap">
+                                        <div class="kb-progress-label">
+                                            <span>Stage progress</span>
+                                            <span>{opp.progressPct}</span>
+                                        </div>
+                                        <div class="kb-progress-track">
+                                            <div class="kb-progress-fill" style={opp.progressFillStyle}></div>
+                                        </div>
+                                    </div>
+                                    <div class="kb-footer">
+                                        <div class="kb-owner">
+                                            <div class="kb-avatar" style={opp.ownerAvatarStyle}>{opp.ownerInitials}</div>
+                                            <span class="kb-owner-name">{opp.ownerName}</span>
+                                        </div>
+                                        <div class="kb-days">
+                                            <span class="kb-dot" style={opp.dotStyle}></span>
+                                            {opp.daysAgoLabel}
+                                        </div>
                                     </div>
                                 </div>
                             </template>

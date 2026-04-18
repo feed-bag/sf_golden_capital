@@ -5,7 +5,7 @@ public with sharing class OpportunityDashboardController {
         return [
             SELECT Id, Name, StageName, Amount, Type,
                    Account.Name, Owner.Name,
-                   Dealer__r.Name, Unique_ID__c
+                   Dealer__r.Name, Unique_ID__c, LastModifiedDate
             FROM Opportunity
             WHERE IsClosed = false
             ORDER BY StageName, Name

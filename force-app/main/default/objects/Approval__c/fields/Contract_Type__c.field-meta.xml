@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Contract_Type__c</fullName>
+    <label>Contract Type</label>
+    <required>true</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>EFA</fullName>
+                <default>false</default>
+                <label>EFA</label>
+            </value>
+            <value>
+                <fullName>FMV</fullName>
+                <default>false</default>
+                <label>FMV</label>
+            </value>
+            <value>
+                <fullName>Sale Leaseback</fullName>
+                <default>false</default>
+                <label>Sale Leaseback</label>
+            </value>
+            <value>
+                <fullName>True Lease</fullName>
+                <default>false</default>
+                <label>True Lease</label>
+            </value>
+            <value>
+                <fullName>LOC</fullName>
+                <default>false</default>
+                <label>LOC</label>
+            </value>
+            <value>
+                <fullName>Rev Based Loan</fullName>
+                <default>false</default>
+                <label>Rev Based Loan</label>
+            </value>
+            <value>
+                <fullName>Factoring</fullName>
+                <default>false</default>
+                <label>Factoring</label>
+            </value>
+            <value>
+                <fullName>HELOC</fullName>
+                <default>false</default>
+                <label>HELOC</label>
+            </value>
+            <value>
+                <fullName>MCA</fullName>
+                <default>false</default>
+                <label>MCA</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

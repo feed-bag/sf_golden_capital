@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>App_Submission__c</fullName>
+    <deleteConstraint>Restrict</deleteConstraint>
+    <label>App Submission</label>
+    <referenceTo>App_Submission__c</referenceTo>
+    <relationshipLabel>Approvals</relationshipLabel>
+    <relationshipName>Approvals</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

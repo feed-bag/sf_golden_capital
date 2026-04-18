@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<RecordType xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Working_Capital</fullName>
+    <active>true</active>
+    <label>Working Capital</label>
+    <picklistValues>
+        <picklist>Contract_Type__c</picklist>
+        <values>
+            <fullName>EFA</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>FMV</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Factoring</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>HELOC</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>LOC</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>MCA</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Rev Based Loan</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Payment_Frequency__c</picklist>
+        <values>
+            <fullName>Annual</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Monthly</fullName>
+            <default>true</default>
+        </values>
+        <values>
+            <fullName>Quarterly</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Semi-Annual</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+    <picklistValues>
+        <picklist>Status__c</picklist>
+        <values>
+            <fullName>Terms Accepted</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Terms Review</fullName>
+            <default>false</default>
+        </values>
+        <values>
+            <fullName>Terns Declined</fullName>
+            <default>false</default>
+        </values>
+    </picklistValues>
+</RecordType>

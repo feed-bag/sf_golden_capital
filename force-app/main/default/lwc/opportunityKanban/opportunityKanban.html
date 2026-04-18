@@ -1,0 +1,43 @@
+<template>
+    <lightning-card title="Pipeline" icon-name="standard:opportunity">
+        <template if:true={isLoading}>
+            <lightning-spinner alternative-text="Loading" size="medium"></lightning-spinner>
+        </template>
+        <template if:true={error}>
+            <p class="error-msg">Error loading pipeline data.</p>
+        </template>
+        <template if:true={columns}>
+            <div class="kanban-board">
+                <template for:each={columns} for:item="col">
+                    <div key={col.stage}
+                         class="kanban-column"
+                         data-stage={col.stage}
+                         ondragover={handleDragOver}
+                         ondrop={handleDrop}>
+                        <div class="column-header">
+                            <span class="column-title">{col.stage}</span>
+                            <span class="column-count">{col.count}</span>
+                        </div>
+                        <div class="column-body">
+                            <template for:each={col.opportunities} for:item="opp">
+                                <div key={opp.Id}
+                                     class="kanban-card"
+                                     draggable="true"
+                                     data-id={opp.Id}
+                                     ondragstart={handleDragStart}>
+                                    <div class="card-name">
+                                        <a href={opp.url} target="_blank">{opp.Name}</a>
+                                    </div>
+                                    <div class="card-account">{opp.accountName}</div>
+                                    <template if:true={opp.amountFormatted}>
+                                        <div class="card-amount">{opp.amountFormatted}</div>
+                                    </template>
+                                </div>
+                            </template>
+                        </div>
+                    </div>
+                </template>
+            </div>
+        </template>
+    </lightning-card>
+</template>

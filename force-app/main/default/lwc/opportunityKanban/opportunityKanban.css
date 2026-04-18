@@ -12,7 +12,6 @@
     flex: 0 0 220px;
     background: #f3f3f3;
     border-radius: 0.5rem;
-    padding: 0;
     min-height: 400px;
     display: flex;
     flex-direction: column;
@@ -81,28 +80,63 @@
     cursor: grabbing;
 }
 
-.card-name a {
-    font-size: 0.875rem;
-    font-weight: 600;
-    color: #0070d2;
+.card-header a {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #032d60;
     text-decoration: none;
+    display: block;
+    margin-bottom: 0.5rem;
+    line-height: 1.2;
 }
 
-.card-name a:hover {
+.card-header a:hover {
+    color: #0070d2;
     text-decoration: underline;
 }
 
-.card-account {
-    font-size: 0.75rem;
-    color: #706e6b;
-    margin-top: 0.2rem;
+.card-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
 }
 
-.card-amount {
-    font-size: 0.8rem;
-    font-weight: 600;
+.pill {
+    display: inline-block;
+    font-size: 0.68rem;
+    font-weight: 500;
+    padding: 0.15rem 0.5rem;
+    border-radius: 999px;
+    white-space: nowrap;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.pill-type {
+    background: #e8f4fd;
+    color: #0070d2;
+}
+
+.pill-dealer {
+    background: #f3e8fd;
+    color: #7a288a;
+}
+
+.pill-owner {
+    background: #fef3e8;
+    color: #b35900;
+}
+
+.pill-uid {
+    background: #f0f0f0;
+    color: #444444;
+}
+
+.pill-amount {
+    background: #eaf5ea;
     color: #2e844a;
-    margin-top: 0.3rem;
+    font-weight: 700;
 }
 
 .error-msg {

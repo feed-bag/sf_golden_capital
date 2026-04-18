@@ -53,12 +53,18 @@ export default class OpportunityKanban extends LightningElement {
 
         opportunities.forEach(opp => {
             if (map[opp.StageName] !== undefined) {
+                const pills = [];
+                if (opp.Type)         pills.push({ key: 'type',   label: opp.Type,                      pillClass: 'pill pill-type' });
+                if (opp.Dealer__r)    pills.push({ key: 'dealer', label: opp.Dealer__r.Name,             pillClass: 'pill pill-dealer' });
+                if (opp.Owner)        pills.push({ key: 'owner',  label: opp.Owner.Name,                 pillClass: 'pill pill-owner' });
+                if (opp.Unique_ID__c) pills.push({ key: 'uid',    label: opp.Unique_ID__c,               pillClass: 'pill pill-uid' });
+                if (opp.Amount)       pills.push({ key: 'amount', label: formatter.format(opp.Amount),   pillClass: 'pill pill-amount' });
+
                 map[opp.StageName].push({
                     Id: opp.Id,
-                    Name: opp.Name,
-                    accountName: opp.Account ? opp.Account.Name : '',
-                    amountFormatted: opp.Amount ? formatter.format(opp.Amount) : null,
-                    url: '/' + opp.Id
+                    accountName: opp.Account ? opp.Account.Name : opp.Name,
+                    url: '/' + opp.Id,
+                    pills
                 });
             }
         });

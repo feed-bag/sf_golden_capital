@@ -3,8 +3,9 @@ public with sharing class OpportunityDashboardController {
     @AuraEnabled(cacheable=true)
     public static List<Opportunity> getOpenOpportunities() {
         return [
-            SELECT Id, Name, StageName, Amount,
-                   Account.Name, Owner.Name
+            SELECT Id, Name, StageName, Amount, Type,
+                   Account.Name, Owner.Name,
+                   Dealer__r.Name, Unique_ID__c
             FROM Opportunity
             WHERE IsClosed = false
             ORDER BY StageName, Name

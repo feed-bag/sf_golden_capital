@@ -25,13 +25,17 @@
                                      draggable="true"
                                      data-id={opp.Id}
                                      ondragstart={handleDragStart}>
-                                    <div class="card-name">
-                                        <a href={opp.url} target="_blank">{opp.Name}</a>
+                                    <div class="card-header">
+                                        <a href={opp.url} target="_blank">{opp.accountName}</a>
                                     </div>
-                                    <div class="card-account">{opp.accountName}</div>
-                                    <template if:true={opp.amountFormatted}>
-                                        <div class="card-amount">{opp.amountFormatted}</div>
-                                    </template>
+                                    <div class="card-pills">
+                                        <template for:each={opp.pills} for:item="pill">
+                                            <span key={pill.key}
+                                                  class={pill.pillClass}>
+                                                {pill.label}
+                                            </span>
+                                        </template>
+                                    </div>
                                 </div>
                             </template>
                         </div>

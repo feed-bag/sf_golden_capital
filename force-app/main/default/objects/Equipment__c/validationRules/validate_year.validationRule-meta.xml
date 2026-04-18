@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>validate_year</fullName>
+    <active>true</active>
+    <errorConditionFormula>NOT(REGEX(Year__c, &quot;[0-9]{1,4}&quot;))</errorConditionFormula>
+    <errorDisplayField>Year__c</errorDisplayField>
+    <errorMessage>not a valid value for Year</errorMessage>
+</ValidationRule>

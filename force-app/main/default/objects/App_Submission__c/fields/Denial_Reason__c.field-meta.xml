@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Denial_Reason__c</fullName>
+    <label>Denial Reason</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Bankruptcy</fullName>
+                <default>false</default>
+                <label>Bankruptcy</label>
+            </value>
+            <value>
+                <fullName>Credit Score</fullName>
+                <default>false</default>
+                <label>Credit Score</label>
+            </value>
+            <value>
+                <fullName>Inadequate Revenue</fullName>
+                <default>false</default>
+                <label>Inadequate Revenue</label>
+            </value>
+            <value>
+                <fullName>Insufficient Collateral</fullName>
+                <default>false</default>
+                <label>Insufficient Collateral</label>
+            </value>
+            <value>
+                <fullName>Past Due Balances</fullName>
+                <default>false</default>
+                <label>Past Due Balances</label>
+            </value>
+            <value>
+                <fullName>Unapproved Dealer</fullName>
+                <default>false</default>
+                <label>Unapproved Dealer</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

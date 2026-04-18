@@ -107,6 +107,7 @@ export default class OpportunityKanban extends LightningElement {
                 accountName: opp.Account ? opp.Account.Name : opp.Name,
                 uniqueId: opp.Unique_ID__c || '',
                 tags,
+                rawAmount: opp.Amount || 0,
                 amountFormatted: opp.Amount ? currencyFormatter.format(opp.Amount) : null,
                 stageStripStyle: `background:${staleColor};`,
                 progressFillStyle: `width:${progress}%; background:#9b9b9b;`,
@@ -119,11 +120,16 @@ export default class OpportunityKanban extends LightningElement {
             });
         });
 
-        this.columns = STAGES.map(stage => ({
-            stage,
-            opportunities: map[stage],
-            count: map[stage].length
-        }));
+        this.columns = STAGES.map(stage => {
+            const opps = map[stage];
+            const total = opps.reduce((sum, o) => sum + (o.rawAmount || 0), 0);
+            return {
+                stage,
+                opportunities: opps,
+                count: opps.length,
+                totalFormatted: total > 0 ? currencyFormatter.format(total) : null
+            };
+        });
     }
 
     handleDragStart(event) {

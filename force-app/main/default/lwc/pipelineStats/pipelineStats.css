@@ -1,3 +1,15 @@
+.banner-header {
+    padding: 1rem 2rem 0;
+    border-bottom: 1px solid #e0e0e0;
+    padding-bottom: 1rem;
+}
+
+.banner-img {
+    max-height: 44px;
+    width: auto;
+    display: block;
+}
+
 .stats-container {
     display: flex;
     align-items: center;

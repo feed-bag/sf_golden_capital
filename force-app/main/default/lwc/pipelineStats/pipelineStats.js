@@ -1,9 +1,11 @@
 import { LightningElement, wire } from 'lwc';
 import getPipelineStats from '@salesforce/apex/OpportunityDashboardController.getPipelineStats';
+import bannerUrl from '@salesforce/resourceUrl/golden_cap_banner';
 
 export default class PipelineStats extends LightningElement {
     stats;
     error;
+    bannerUrl = bannerUrl;
 
     @wire(getPipelineStats)
     wiredStats({ data, error }) {

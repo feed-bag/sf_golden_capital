@@ -16,8 +16,13 @@
                          ondragleave={handleDragLeave}
                          ondrop={handleDrop}>
                         <div class="kb-col-header">
-                            <span class="kb-col-title">{col.stage}</span>
-                            <span class="kb-col-count">{col.count}</span>
+                            <div class="kb-col-header-top">
+                                <span class="kb-col-title">{col.stage}</span>
+                                <span class="kb-col-count">{col.count}</span>
+                            </div>
+                            <template if:true={col.totalFormatted}>
+                                <div class="kb-col-total">{col.totalFormatted}</div>
+                            </template>
                         </div>
                         <div class="kb-col-body">
                             <template for:each={col.opportunities} for:item="opp">

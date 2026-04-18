@@ -1,10 +1,16 @@
 <template>
-    <lightning-tabset variant="scoped">
-        <lightning-tab label="Pipeline">
-            <c-opportunity-kanban></c-opportunity-kanban>
-        </lightning-tab>
-        <lightning-tab label="Metrics">
-            <c-pipeline-stats></c-pipeline-stats>
-        </lightning-tab>
-    </lightning-tabset>
+    <div class="hd-container">
+        <div class="hd-tabbar">
+            <button class={pipelineTabClass} data-tab="pipeline" onclick={handleTabClick}>Pipeline</button>
+            <button class={metricsTabClass} data-tab="metrics" onclick={handleTabClick}>Metrics</button>
+        </div>
+        <div class="hd-content">
+            <template if:true={isPipeline}>
+                <c-opportunity-kanban></c-opportunity-kanban>
+            </template>
+            <template if:true={isMetrics}>
+                <c-pipeline-stats></c-pipeline-stats>
+            </template>
+        </div>
+    </div>
 </template>

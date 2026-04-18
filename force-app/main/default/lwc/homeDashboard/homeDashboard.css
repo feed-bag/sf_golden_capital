@@ -1,3 +1,49 @@
 :host {
     display: block;
 }
+
+.hd-container {
+    border-radius: 0.75rem;
+    overflow: hidden;
+}
+
+.hd-tabbar {
+    display: flex;
+    gap: 0.35rem;
+    padding: 0.65rem 0.75rem 0;
+    background:
+        radial-gradient(ellipse 70% 200% at 8% 50%, rgba(58, 90, 138, 0.70) 0%, transparent 65%),
+        #0a1220;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.hd-tab {
+    background: rgba(255, 255, 255, 0.07);
+    border: 0.5px solid rgba(255, 255, 255, 0.14);
+    border-bottom: none;
+    color: rgba(255, 255, 255, 0.45);
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.45rem 1.25rem;
+    border-radius: 0.4rem 0.4rem 0 0;
+    cursor: pointer;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    transition: background 0.15s, color 0.15s;
+}
+
+.hd-tab-active {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: rgba(255, 255, 255, 0.18);
+    border-bottom: 2px solid #d29a2e;
+    color: #ffffff;
+}
+
+.hd-tab:hover:not(.hd-tab-active) {
+    background: rgba(255, 255, 255, 0.11);
+    color: rgba(255, 255, 255, 0.72);
+}
+
+.hd-content {
+    background: transparent;
+}

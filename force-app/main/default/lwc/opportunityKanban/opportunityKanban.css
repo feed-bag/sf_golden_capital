@@ -1,4 +1,4 @@
-/* Board */
+/* Board — Midnight Capital (04): dark base + screen-blended steel blue & gold blobs */
 .kb-board {
     display: flex;
     flex-direction: row;
@@ -8,12 +8,21 @@
     gap: 0.75rem;
     height: 660px;
     align-items: stretch;
+    border-radius: 0.75rem;
+    background:
+        radial-gradient(ellipse 52% 105% at 8% 28%,  rgba(58, 90, 138, 0.88) 0%, transparent 68%),
+        radial-gradient(ellipse 46% 96%  at 82% 72%, rgba(210, 154, 46, 0.88) 0%, transparent 68%),
+        radial-gradient(ellipse 38% 78%  at 50% 115%,rgba(122, 160, 208, 0.80) 0%, transparent 65%),
+        #0a1220;
 }
 
 /* Column */
 .kb-column {
     flex: 0 0 240px;
-    background: #f3f3f3;
+    background: rgba(255, 255, 255, 0.07);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 0.5px solid rgba(255, 255, 255, 0.13);
     border-radius: 0.5rem;
     height: 100%;
     display: flex;
@@ -21,11 +30,13 @@
     overflow: hidden;
     transition: background 0.15s;
 }
-.kb-column.drag-over { background: #d8edff; }
+.kb-column.drag-over { background: rgba(255, 255, 255, 0.14); }
 
 .kb-col-header {
     padding: 0.55rem 0.75rem;
-    background: #032d60;
+    background: rgba(10, 18, 32, 0.72);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
     border-radius: 0.5rem 0.5rem 0 0;
     flex-shrink: 0;
 }
@@ -45,7 +56,7 @@
     text-overflow: ellipsis;
 }
 .kb-col-count {
-    background: rgba(255,255,255,0.22);
+    background: rgba(255,255,255,0.18);
     color: #fff;
     font-size: 0.7rem;
     font-weight: 700;
@@ -56,7 +67,7 @@
 }
 .kb-col-total {
     font-size: 0.7rem;
-    color: rgba(255,255,255,0.75);
+    color: rgba(255,255,255,0.65);
     margin-top: 0.2rem;
     font-variant-numeric: tabular-nums;
 }
@@ -72,20 +83,23 @@
 
 /* Card */
 .kb-card {
-    background: #ffffff;
-    border: 0.5px solid #e0e0e0;
+    background: rgba(255, 255, 255, 0.13);
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+    border: 0.5px solid rgba(255, 255, 255, 0.20);
     border-radius: 0.5rem;
     padding: 14px 16px;
     display: flex;
     flex-direction: column;
     gap: 10px;
     cursor: grab;
-    transition: box-shadow 0.15s, transform 0.15s;
+    transition: box-shadow 0.15s, transform 0.15s, background 0.15s;
     overflow: hidden;
     flex-shrink: 0;
 }
 .kb-card:hover {
-    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    background: rgba(255, 255, 255, 0.19);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.40);
     transform: translateY(-1px);
 }
 
@@ -107,7 +121,7 @@
 .kb-title {
     font-size: 14px;
     font-weight: 500;
-    color: #181818;
+    color: rgba(255, 255, 255, 0.92);
     text-decoration: none;
     line-height: 1.35;
     overflow: hidden;
@@ -116,10 +130,10 @@
     -webkit-box-orient: vertical;
     flex: 1;
 }
-.kb-title:hover { color: #0070d2; text-decoration: underline; }
+.kb-title:hover { color: #7ec8fa; text-decoration: underline; }
 .kb-uid {
     font-size: 10px;
-    color: #888780;
+    color: rgba(255, 255, 255, 0.40);
     font-variant-numeric: tabular-nums;
     white-space: nowrap;
     flex-shrink: 0;
@@ -135,14 +149,14 @@
     line-height: 1.5;
     white-space: nowrap;
 }
-.kb-tag-blue    { background: #E6F1FB; color: #0C447C; }
-.kb-tag-neutral { background: #F1EFE8; color: #444441; }
+.kb-tag-blue    { background: rgba(58, 90, 138, 0.55); color: #a8d4f7; }
+.kb-tag-neutral { background: rgba(255, 255, 255, 0.11); color: rgba(255,255,255,0.78); }
 
 /* Amount */
 .kb-amount {
     font-size: 18px;
     font-weight: 500;
-    color: #181818;
+    color: #ffffff;
     font-variant-numeric: tabular-nums;
     margin: 0;
 }
@@ -153,11 +167,11 @@
     display: flex;
     justify-content: space-between;
     font-size: 11px;
-    color: #706e6b;
+    color: rgba(255, 255, 255, 0.55);
 }
 .kb-progress-track {
     height: 4px;
-    background: #e8e8e8;
+    background: rgba(255, 255, 255, 0.16);
     border-radius: 999px;
     overflow: hidden;
 }
@@ -169,7 +183,7 @@
     align-items: center;
     justify-content: space-between;
     padding-top: 10px;
-    border-top: 0.5px solid #e0e0e0;
+    border-top: 0.5px solid rgba(255, 255, 255, 0.13);
 }
 .kb-owner { display: flex; align-items: center; gap: 8px; }
 .kb-avatar {
@@ -183,13 +197,13 @@
     font-weight: 500;
     flex-shrink: 0;
 }
-.kb-owner-name { font-size: 12px; color: #706e6b; }
+.kb-owner-name { font-size: 12px; color: rgba(255, 255, 255, 0.55); }
 .kb-days {
     display: flex;
     align-items: center;
     gap: 5px;
     font-size: 11px;
-    color: #706e6b;
+    color: rgba(255, 255, 255, 0.55);
     font-variant-numeric: tabular-nums;
 }
 .kb-dot {
@@ -199,4 +213,4 @@
     flex-shrink: 0;
 }
 
-.kb-error { color: #c23934; padding: 1rem; }
+.kb-error { color: #f87171; padding: 1rem; }

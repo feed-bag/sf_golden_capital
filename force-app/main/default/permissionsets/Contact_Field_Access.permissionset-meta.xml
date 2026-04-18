@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Grants read access to Contact fields that should be visible to all users.</description>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Contact.Phone_Digits__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <hasActivationRequired>false</hasActivationRequired>
+    <label>Contact Field Access</label>
+</PermissionSet>

@@ -1,0 +1,28 @@
+<template>
+    <lightning-card>
+        <div class="banner-header">
+            <img src={bannerUrl} alt="Golden Capital" class="banner-img" />
+        </div>
+        <div class="stats-container">
+            <template if:true={stats}>
+                <div class="stat-tile">
+                    <div class="stat-value">{stats.activeDeals}</div>
+                    <div class="stat-label">Active Deals</div>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-tile">
+                    <div class="stat-value">{stats.dealsThisMonth}</div>
+                    <div class="stat-label">Deals Created This Month</div>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-tile">
+                    <div class="stat-value">{volumeFundedFormatted}</div>
+                    <div class="stat-label">Net Volume Funded This Month</div>
+                </div>
+            </template>
+            <template if:true={error}>
+                <p class="error-msg">Error loading stats.</p>
+            </template>
+        </div>
+    </lightning-card>
+</template>

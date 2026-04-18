@@ -19,20 +19,20 @@ const STAGES = [
     'FPC'
 ];
 
-const STAGE_META = {
-    'App In':               { color: '#85B7EB', progress: 8 },
-    'Sales Follow Up':      { color: '#9BB5E0', progress: 17 },
-    'On Hold':              { color: '#A0A0B8', progress: 25 },
-    'Internal Review':      { color: '#AFA9EC', progress: 33 },
-    'Submitted':            { color: '#C4A8E8', progress: 42 },
-    'Approved':             { color: '#F0C97B', progress: 50 },
-    'Pre Docs':             { color: '#F0997B', progress: 58 },
-    'Docs Requested':       { color: '#F08B6B', progress: 67 },
-    'Docs Out':             { color: '#EDB96A', progress: 75 },
-    'Funding Request Sent': { color: '#C8D96A', progress: 83 },
-    'Funded':               { color: '#A8CC5A', progress: 92 },
-    'FPC':                  { color: '#97C459', progress: 100 }
+const STAGE_PROGRESS = {
+    'App In': 8, 'Sales Follow Up': 17, 'On Hold': 25,
+    'Internal Review': 33, 'Submitted': 42, 'Approved': 50,
+    'Pre Docs': 58, 'Docs Requested': 67, 'Docs Out': 75,
+    'Funding Request Sent': 83, 'Funded': 92, 'FPC': 100
 };
+
+function stalenessColor(days) {
+    if (days <= 1)  return '#97C459'; // green
+    if (days <= 3)  return '#C8D96A'; // yellow-green
+    if (days <= 6)  return '#EF9F27'; // amber
+    if (days <= 13) return '#E8804A'; // orange
+    return '#E24B4A';                 // red
+}
 
 const AVATAR_PALETTES = [
     { bg: '#EEEDFE', fg: '#3C3489' },
@@ -63,10 +63,6 @@ function hashIndex(str, len) {
     return h % len;
 }
 
-function daysAgo(dateStr) {
-    const ms = Date.now() - new Date(dateStr).getTime();
-    return Math.floor(ms / (1000 * 60 * 60 * 24));
-}
 
 export default class OpportunityKanban extends LightningElement {
     @track columns;
@@ -95,11 +91,11 @@ export default class OpportunityKanban extends LightningElement {
         opportunities.forEach(opp => {
             if (map[opp.StageName] === undefined) return;
 
-            const meta = STAGE_META[opp.StageName] || { color: '#cccccc', progress: 0 };
+            const daysInStage = opp.LastStageChangeInDays || 0;
+            const staleColor = stalenessColor(daysInStage);
+            const progress = STAGE_PROGRESS[opp.StageName] || 0;
             const ownerName = opp.Owner ? opp.Owner.Name : '';
             const palette = AVATAR_PALETTES[hashIndex(ownerName, AVATAR_PALETTES.length)];
-            const days = daysAgo(opp.LastModifiedDate);
-            const dotColor = days < 7 ? '#639922' : days <= 14 ? '#EF9F27' : '#E24B4A';
 
             const tags = [];
             if (opp.Type)      tags.push({ key: 'type',   label: opp.Type,            tagClass: 'kb-tag kb-tag-blue' });
@@ -112,14 +108,14 @@ export default class OpportunityKanban extends LightningElement {
                 uniqueId: opp.Unique_ID__c || '',
                 tags,
                 amountFormatted: opp.Amount ? currencyFormatter.format(opp.Amount) : null,
-                stageStripStyle: `background:${meta.color};`,
-                progressFillStyle: `width:${meta.progress}%; background:${meta.color};`,
-                progressPct: meta.progress + '%',
+                stageStripStyle: `background:${staleColor};`,
+                progressFillStyle: `width:${progress}%; background:#9b9b9b;`,
+                progressPct: progress + '%',
                 ownerInitials: getInitials(ownerName),
                 ownerName,
                 ownerAvatarStyle: `background:${palette.bg}; color:${palette.fg};`,
-                daysAgoLabel: days === 0 ? 'Today' : days === 1 ? '1d ago' : `${days}d ago`,
-                dotStyle: `background:${dotColor};`
+                daysInStageLabel: daysInStage === 0 ? 'Today' : daysInStage === 1 ? '1d in stage' : `${daysInStage}d in stage`,
+                dotStyle: `background:${staleColor};`
             });
         });
 

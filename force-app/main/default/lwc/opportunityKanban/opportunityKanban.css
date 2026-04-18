@@ -82,6 +82,7 @@
     cursor: grab;
     transition: box-shadow 0.15s, transform 0.15s;
     overflow: hidden;
+    flex-shrink: 0;
 }
 .kb-card:hover {
     box-shadow: 0 4px 12px rgba(0,0,0,0.12);

@@ -3,14 +3,8 @@
     <flexiPageRegions>
         <itemInstances>
             <componentInstance>
-                <componentName>c:pipelineStats</componentName>
-                <identifier>pipelineStats</identifier>
-            </componentInstance>
-        </itemInstances>
-        <itemInstances>
-            <componentInstance>
-                <componentName>c:opportunityKanban</componentName>
-                <identifier>opportunityKanban</identifier>
+                <componentName>c:homeDashboard</componentName>
+                <identifier>homeDashboard</identifier>
             </componentInstance>
         </itemInstances>
         <name>top</name>

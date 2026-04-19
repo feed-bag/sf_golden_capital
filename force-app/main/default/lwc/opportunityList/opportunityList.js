@@ -5,6 +5,8 @@ import { refreshApex } from '@salesforce/apex';
 import getOpportunitiesForList  from '@salesforce/apex/OpportunityDashboardController.getOpportunitiesForList';
 import getOpportunityFieldMeta  from '@salesforce/apex/OpportunityDashboardController.getOpportunityFieldMeta';
 import getActiveUsers           from '@salesforce/apex/OpportunityDashboardController.getActiveUsers';
+import getColumnPreference      from '@salesforce/apex/OpportunityDashboardController.getColumnPreference';
+import saveColumnPreference     from '@salesforce/apex/OpportunityDashboardController.saveColumnPreference';
 import bulkUpdateStage          from '@salesforce/apex/OpportunityDashboardController.bulkUpdateStage';
 import bulkUpdateOwner          from '@salesforce/apex/OpportunityDashboardController.bulkUpdateOwner';
 import bulkDeleteOpportunities  from '@salesforce/apex/OpportunityDashboardController.bulkDeleteOpportunities';
@@ -12,7 +14,6 @@ import bulkDeleteOpportunities  from '@salesforce/apex/OpportunityDashboardContr
 // ── Formatters ────────────────────────────────────────────────────────────────
 const CURRENCY = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD', maximumFractionDigits: 0 });
 const DATE_FMT  = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-const LS_KEY    = 'gc_opp_list_cols_v2';
 
 function fmtDate(d) {
     try { return d ? DATE_FMT.format(new Date(d.replace ? d.replace(/-/g, '/') : d)) : '—'; } catch(e) { return '—'; }
@@ -224,17 +225,25 @@ export default class OpportunityList extends NavigationMixin(LightningElement) {
     @track _userFilter = '';
     @track isSaving    = false;
 
-    _allOpps = [];
-    _users   = [];
+    _allOpps     = [];
+    _users       = [];
     _wiredOppsResult;
+    _prefApplied = false;
 
-    connectedCallback() {
-        try {
-            const saved = JSON.parse(localStorage.getItem(LS_KEY));
-            if (Array.isArray(saved) && saved.length > 0) {
-                this._visibleCols = new Set(saved);
-            }
-        } catch(e) { /* ignore */ }
+    @wire(getColumnPreference)
+    wiredColumnPref({ data, error }) {
+        if (this._prefApplied) return;
+        if (error) { this._prefApplied = true; return; }
+        if (data === undefined) return;
+        this._prefApplied = true;
+        if (data) {
+            try {
+                const cols = JSON.parse(data);
+                if (Array.isArray(cols) && cols.length > 0) {
+                    this._visibleCols = new Set(cols);
+                }
+            } catch(e) { /* use defaults */ }
+        }
     }
 
     @wire(getOpportunitiesForList)
@@ -408,8 +417,10 @@ export default class OpportunityList extends NavigationMixin(LightningElement) {
         const cols    = new Set(this._visibleCols);
         if (checked) cols.add(field);
         else if (cols.size > 1) cols.delete(field);
-        this._visibleCols = cols;
-        try { localStorage.setItem(LS_KEY, JSON.stringify([...cols])); } catch(e) { /* ignore */ }
+        this._visibleCols  = cols;
+        this._prefApplied  = true;
+        saveColumnPreference({ colsJson: JSON.stringify([...cols]) })
+            .catch(e => console.error('Failed to save column preference', e));
     }
 
     // ── Toolbar ───────────────────────────────────────────────────────────────

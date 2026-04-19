@@ -89,4 +89,40 @@ private class OpportunityDashboardControllerTest {
         Integer remaining = [SELECT COUNT() FROM Opportunity WHERE Id IN :ids];
         System.assertEquals(0, remaining);
     }
+
+    @isTest
+    static void testColumnPreferenceInsertAndRetrieve() {
+        String json = '["accountName","StageName","Amount"]';
+
+        Test.startTest();
+        OpportunityDashboardController.saveColumnPreference(json);
+        String retrieved = OpportunityDashboardController.getColumnPreference();
+        Test.stopTest();
+
+        System.assertEquals(json, retrieved, 'Saved preference should match retrieved value');
+    }
+
+    @isTest
+    static void testColumnPreferenceUpdate() {
+        String first  = '["accountName","StageName"]';
+        String second = '["accountName","StageName","Amount","Type"]';
+
+        Test.startTest();
+        OpportunityDashboardController.saveColumnPreference(first);
+        OpportunityDashboardController.saveColumnPreference(second);
+        String retrieved = OpportunityDashboardController.getColumnPreference();
+        Test.stopTest();
+
+        System.assertEquals(second, retrieved, 'Second save should overwrite first');
+    }
+
+    @isTest
+    static void testColumnPreferenceNullWhenNotSet() {
+        // No List_Column_Pref__c inserted — should return null
+        Test.startTest();
+        String result = OpportunityDashboardController.getColumnPreference();
+        Test.stopTest();
+
+        System.assertEquals(null, result, 'Should return null when no preference is saved');
+    }
 }

@@ -104,6 +104,28 @@ public with sharing class OpportunityDashboardController {
         return [SELECT Id, Name FROM User WHERE IsActive = true ORDER BY Name LIMIT 500];
     }
 
+    @AuraEnabled(cacheable=true)
+    public static String getColumnPreference() {
+        List<List_Column_Pref__c> prefs = [
+            SELECT Columns__c FROM List_Column_Pref__c
+            WHERE OwnerId = :UserInfo.getUserId() LIMIT 1
+        ];
+        return prefs.isEmpty() ? null : prefs[0].Columns__c;
+    }
+
+    @AuraEnabled
+    public static void saveColumnPreference(String colsJson) {
+        List<List_Column_Pref__c> existing = [
+            SELECT Id FROM List_Column_Pref__c
+            WHERE OwnerId = :UserInfo.getUserId() LIMIT 1
+        ];
+        if (!existing.isEmpty()) {
+            update new List_Column_Pref__c(Id = existing[0].Id, Columns__c = colsJson);
+        } else {
+            insert new List_Column_Pref__c(Columns__c = colsJson);
+        }
+    }
+
     @AuraEnabled
     public static void updateOpportunityStage(Id oppId, String newStage) {
         update new Opportunity(Id = oppId, StageName = newStage);

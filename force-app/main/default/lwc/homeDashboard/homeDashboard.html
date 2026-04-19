@@ -3,6 +3,7 @@
         <div class="hd-tabbar">
             <button class={pipelineTabClass} data-tab="pipeline" onclick={handleTabClick}>Pipeline</button>
             <button class={metricsTabClass} data-tab="metrics" onclick={handleTabClick}>Metrics</button>
+            <button class={listTabClass} data-tab="list" onclick={handleTabClick}>List</button>
         </div>
         <div class="hd-content">
             <template if:true={isPipeline}>
@@ -10,6 +11,9 @@
             </template>
             <template if:true={isMetrics}>
                 <c-pipeline-stats></c-pipeline-stats>
+            </template>
+            <template if:true={isListView}>
+                <c-opportunity-list></c-opportunity-list>
             </template>
         </div>
     </div>

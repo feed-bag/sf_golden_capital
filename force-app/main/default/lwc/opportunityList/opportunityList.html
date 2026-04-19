@@ -1,0 +1,83 @@
+<template>
+    <div class="ol-container">
+
+        <!-- Toolbar -->
+        <div class="ol-toolbar">
+            <div class="ol-search-wrap">
+                <svg class="ol-search-icon" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                    <circle cx="6.5" cy="6.5" r="4.5" stroke="#9ca3af" stroke-width="1.4"/>
+                    <path d="M10 10l3.5 3.5" stroke="#9ca3af" stroke-width="1.4" stroke-linecap="round"/>
+                </svg>
+                <input class="ol-search" type="search" placeholder="Search by account, ID, stage, owner, dealer…" oninput={handleSearch}/>
+            </div>
+            <div class="ol-filters">
+                <select class="ol-select" data-key="stage" onchange={handleFilterChange}>
+                    <template for:each={stageOptions} for:item="opt">
+                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    </template>
+                </select>
+                <select class="ol-select" data-key="type" onchange={handleFilterChange}>
+                    <template for:each={typeOptions} for:item="opt">
+                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    </template>
+                </select>
+            </div>
+            <span class="ol-count">{rowCount}</span>
+        </div>
+
+        <!-- Loading -->
+        <template if:true={isLoading}>
+            <div class="ol-state">
+                <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
+            </div>
+        </template>
+
+        <!-- Error -->
+        <template if:true={error}>
+            <div class="ol-state ol-error">Failed to load opportunities.</div>
+        </template>
+
+        <!-- Empty -->
+        <template if:true={isEmpty}>
+            <div class="ol-state ol-empty">No opportunities match your search.</div>
+        </template>
+
+        <!-- Table -->
+        <template if:false={isLoading}>
+            <template if:false={error}>
+                <div class="ol-table-wrap">
+                    <table class="ol-table">
+                        <thead>
+                            <tr>
+                                <template for:each={headerColumns} for:item="col">
+                                    <th key={col.field} class={col.headerClass} data-field={col.field} onclick={handleSort}>
+                                        {col.label}
+                                        <span class="ol-sort-icon">{col.sortIcon}</span>
+                                    </th>
+                                </template>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <template for:each={rows} for:item="row">
+                                <tr key={row.Id} class="ol-row" data-id={row.Id} onclick={handleRowClick}>
+                                    <td class="ol-td ol-td-id">{row.uniqueId}</td>
+                                    <td class="ol-td ol-td-account">{row.accountName}</td>
+                                    <td class="ol-td">{row.StageName}</td>
+                                    <td class="ol-td ol-td-amount">{row.amountFormatted}</td>
+                                    <td class="ol-td">{row.Type}</td>
+                                    <td class="ol-td">{row.dealerName}</td>
+                                    <td class="ol-td">{row.ownerName}</td>
+                                    <td class="ol-td ol-td-days">
+                                        <span class="ol-dot" style={row.dotStyle}></span>
+                                        {row.daysLabel}
+                                    </td>
+                                </tr>
+                            </template>
+                        </tbody>
+                    </table>
+                </div>
+            </template>
+        </template>
+
+    </div>
+</template>

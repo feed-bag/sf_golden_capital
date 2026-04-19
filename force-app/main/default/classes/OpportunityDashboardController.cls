@@ -41,6 +41,18 @@ public with sharing class OpportunityDashboardController {
         return stats;
     }
 
+    @AuraEnabled(cacheable=true)
+    public static List<Opportunity> getOpportunitiesForList() {
+        return [
+            SELECT Id, Name, StageName, Amount, Type, CloseDate, CreatedDate,
+                   Account.Name, Owner.Name,
+                   Dealer__r.Name, Unique_ID__c, LastStageChangeInDays
+            FROM Opportunity
+            WHERE IsClosed = false
+            ORDER BY Name
+        ];
+    }
+
     @AuraEnabled
     public static void updateOpportunityStage(Id oppId, String newStage) {
         Opportunity opp = new Opportunity(Id = oppId, StageName = newStage);

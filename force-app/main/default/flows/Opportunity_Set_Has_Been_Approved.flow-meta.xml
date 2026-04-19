@@ -1,45 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>66.0</apiVersion>
-    <description>Sets Has_Been_Approved__c to true the first time an Opportunity stage changes to Approved. Uses Before Save so no separate DML is needed.</description>
-    <environments>Default</environments>
-    <interviewLabel>Opportunity Set Has Been Approved {!$Flow.CurrentDateTime}</interviewLabel>
-    <label>Opportunity Set Has Been Approved</label>
-    <processMetadataValues>
-        <name>BuilderType</name>
-        <value>
-            <stringValue>LightningFlowBuilder</stringValue>
-        </value>
-    </processMetadataValues>
-    <processType>AutoLaunchedFlow</processType>
-    <start>
-        <locationX>176</locationX>
-        <locationY>0</locationY>
-        <filterLogic>1 AND 2</filterLogic>
-        <filters>
-            <field>StageName</field>
-            <operator>EqualTo</operator>
-            <value>
-                <stringValue>Approved</stringValue>
-            </value>
-        </filters>
-        <filters>
-            <field>Has_Been_Approved__c</field>
-            <operator>EqualTo</operator>
-            <value>
-                <booleanValue>false</booleanValue>
-            </value>
-        </filters>
-        <connector>
-            <targetReference>Set_Has_Been_Approved</targetReference>
-        </connector>
-        <object>Opportunity</object>
-        <recordTriggerType>CreateAndUpdate</recordTriggerType>
-        <triggerType>RecordBeforeSave</triggerType>
-        <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
-    </start>
-    <status>Active</status>
-
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
     <assignments>
         <name>Set_Has_Been_Approved</name>
         <label>Set Has Been Approved</label>
@@ -53,5 +15,63 @@
             </value>
         </assignmentItems>
     </assignments>
-
+    <description>Sets Has_Been_Approved__c to true when an Opportunity stage changes to Approved, FPC, Fully Funded, or Pre Docs. Uses Before Save so no separate DML is needed.</description>
+    <environments>Default</environments>
+    <interviewLabel>Opportunity Set Has Been Approved {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Opportunity Set Has Been Approved</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <start>
+        <locationX>176</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Set_Has_Been_Approved</targetReference>
+        </connector>
+        <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+        <filterLogic>(1 OR 2 OR 3 OR 4) AND 5</filterLogic>
+        <filters>
+            <field>StageName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Approved</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>StageName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>FPC</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>StageName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Fully Funded</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>StageName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Pre Docs</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>Has_Been_Approved__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>false</booleanValue>
+            </value>
+        </filters>
+        <object>Opportunity</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+    </start>
+    <status>Active</status>
 </Flow>

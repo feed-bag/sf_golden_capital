@@ -59,13 +59,24 @@
                                                     </div>
                                                 </div>
 
-                                                <!-- Dealer cleared toggle -->
-                                                <div class="c-dealer-switch" data-item-id={item.Id} onclick={handleToggleDealerCleared}>
-                                                    <span class={item.clearedSwitchLabelClass}>Cleared</span>
-                                                    <div class={item.clearedTrackClass}>
-                                                        <div class="c-thumb"></div>
+                                                <!-- Dealer cleared indicator (read-only, only when dealer visible) -->
+                                                <template if:true={item.Dealer_Visible__c}>
+                                                    <div class="c-cleared-indicator">
+                                                        <span class="c-cleared-label">Cleared</span>
+                                                        <template if:true={item.Dealer_Cleared__c}>
+                                                            <svg class="c-cleared-icon c-cleared-yes" viewBox="0 0 14 14" fill="none" aria-label="Cleared">
+                                                                <circle cx="7" cy="7" r="6" fill="#dcfce7" stroke="#16a34a" stroke-width="1.2"/>
+                                                                <path d="M4.5 7l2 2 3-3" stroke="#16a34a" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+                                                            </svg>
+                                                        </template>
+                                                        <template if:false={item.Dealer_Cleared__c}>
+                                                            <svg class="c-cleared-icon c-cleared-no" viewBox="0 0 14 14" fill="none" aria-label="Not cleared">
+                                                                <circle cx="7" cy="7" r="6" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="1.2"/>
+                                                                <path d="M5 5l4 4M9 5l-4 4" stroke="#94a3b8" stroke-width="1.4" stroke-linecap="round"/>
+                                                            </svg>
+                                                        </template>
                                                     </div>
-                                                </div>
+                                                </template>
 
                                                 <div class="c-divider"></div>
 

@@ -7,7 +7,6 @@ import addItem from '@salesforce/apex/OpportunityChecklistController.addItem';
 import deleteItem from '@salesforce/apex/OpportunityChecklistController.deleteItem';
 import saveNotes from '@salesforce/apex/OpportunityChecklistController.saveNotes';
 import updateDealerVisible from '@salesforce/apex/OpportunityChecklistController.updateDealerVisible';
-import updateDealerCleared from '@salesforce/apex/OpportunityChecklistController.updateDealerCleared';
 
 function timeAgo(dateStr) {
     if (!dateStr) return null;
@@ -25,8 +24,6 @@ function mapItem(item) {
         titleClass:              'c-title' + (item.Complete__c       ? ' done'    : ''),
         trackClass:              'c-track' + (item.Dealer_Visible__c ? ' active'  : ''),
         switchLabelClass:        'c-switch-label' + (item.Dealer_Visible__c  ? ' active' : ''),
-        clearedTrackClass:       'c-track' + (item.Dealer_Cleared__c ? ' active'  : ''),
-        clearedSwitchLabelClass: 'c-switch-label' + (item.Dealer_Cleared__c ? ' active' : ''),
         noteLength:              (item.Notes__c || '').length,
         lastModifiedLabel:       item.Notes__c ? timeAgo(item.LastModifiedDate) : null,
     };
@@ -155,20 +152,6 @@ export default class OpportunityChecklist extends LightningElement {
             .catch(err => {
                 this._updateItem(itemId, { Dealer_Visible__c: !dealerVisible });
                 this.showToast('Error', err.body?.message || 'Could not update visibility.', 'error');
-            });
-    }
-
-    handleToggleDealerCleared(event) {
-        const itemId = event.currentTarget.dataset.itemId;
-        const item = this._findItem(itemId);
-        if (!item) return;
-        const dealerCleared = !item.Dealer_Cleared__c;
-        this._updateItem(itemId, { Dealer_Cleared__c: dealerCleared });
-        updateDealerCleared({ itemId, dealerCleared })
-            .then(() => refreshApex(this.wiredResult))
-            .catch(err => {
-                this._updateItem(itemId, { Dealer_Cleared__c: !dealerCleared });
-                this.showToast('Error', err.body?.message || 'Could not update dealer cleared.', 'error');
             });
     }
 

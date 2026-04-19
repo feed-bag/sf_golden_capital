@@ -329,3 +329,22 @@
 
 .c-notes-save:hover { background: #0f1f3a; border-color: #0f1f3a; }
 .c-notes-save:active { background: #0a1528; }
+
+.c-cleared-indicator {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+}
+
+.c-cleared-label {
+    font-size: 11px;
+    color: rgba(16, 32, 45, 0.50);
+    font-weight: 500;
+}
+
+.c-cleared-icon {
+    width: 14px;
+    height: 14px;
+    flex-shrink: 0;
+}

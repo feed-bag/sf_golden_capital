@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Unique_ID__c</fullName>
-    <displayFormat>OPP{0000000}</displayFormat>
+    <displayFormat>OPP{000000}</displayFormat>
     <externalId>true</externalId>
     <label>Unique ID</label>
     <type>AutoNumber</type>

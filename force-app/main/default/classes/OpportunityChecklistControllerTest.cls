@@ -115,6 +115,36 @@ private class OpportunityChecklistControllerTest {
     }
 
     @isTest
+    static void testUpdateDealerVisible() {
+        Checklist__c item = [SELECT Id, Dealer_Visible__c FROM Checklist__c WHERE Name__c = 'Item One' LIMIT 1];
+        Test.startTest();
+        OpportunityChecklistController.updateDealerVisible(item.Id, true);
+        Test.stopTest();
+        item = [SELECT Dealer_Visible__c FROM Checklist__c WHERE Id = :item.Id];
+        System.assertEquals(true, item.Dealer_Visible__c);
+    }
+
+    @isTest
+    static void testUpdateDealerCleared() {
+        Checklist__c item = [SELECT Id, Dealer_Cleared__c FROM Checklist__c WHERE Name__c = 'Item One' LIMIT 1];
+        Test.startTest();
+        OpportunityChecklistController.updateDealerCleared(item.Id, true);
+        Test.stopTest();
+        item = [SELECT Dealer_Cleared__c FROM Checklist__c WHERE Id = :item.Id];
+        System.assertEquals(true, item.Dealer_Cleared__c);
+    }
+
+    @isTest
+    static void testSaveNotes() {
+        Checklist__c item = [SELECT Id FROM Checklist__c WHERE Name__c = 'Item One' LIMIT 1];
+        Test.startTest();
+        OpportunityChecklistController.saveNotes(item.Id, 'Test note');
+        Test.stopTest();
+        item = [SELECT Notes__c FROM Checklist__c WHERE Id = :item.Id];
+        System.assertEquals('Test note', item.Notes__c);
+    }
+
+    @isTest
     static void testGetChecklistItemsAdHoc() {
         Opportunity opp = [SELECT Id FROM Opportunity LIMIT 1];
 

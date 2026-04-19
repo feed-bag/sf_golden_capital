@@ -460,10 +460,10 @@ export default class OpportunityList extends NavigationMixin(LightningElement) {
     handleRowClick(event) {
         const id = event.currentTarget.dataset.id;
         if (!id) return;
-        this[NavigationMixin.Navigate]({
+        this[NavigationMixin.GenerateUrl]({
             type: 'standard__recordPage',
             attributes: { recordId: id, actionName: 'view' },
-        });
+        }).then(url => window.open(url, '_blank'));
     }
 
     // ── Bulk: Change Stage ────────────────────────────────────────────────────

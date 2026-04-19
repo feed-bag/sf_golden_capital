@@ -19,6 +19,18 @@ const STAGES = [
     'FPC'
 ];
 
+const TYPE_TAG_COLORS = {
+    'Equipment':       { bg: 'rgba(210,154,46,0.18)',   color: '#6b4400' },
+    'Working Capital': { bg: 'rgba(58,90,138,0.18)',    color: '#1a3060' },
+    'New Business':    { bg: 'rgba(90,122,176,0.18)',   color: '#2a3d5e' },
+};
+const TYPE_TAG_FALLBACK = [
+    { bg: 'rgba(194,145,46,0.16)',  color: '#7a5200' },
+    { bg: 'rgba(42,61,94,0.16)',    color: '#253551' },
+    { bg: 'rgba(122,160,208,0.16)', color: '#1e3560' },
+];
+const DEALER_TAG_STYLE = 'background:rgba(37,53,81,0.10); color:#253551; border:1px solid rgba(37,53,81,0.18);';
+
 const STAGE_PROGRESS = {
     'App In': 8, 'Sales Follow Up': 17, 'On Hold': 25,
     'Internal Review': 33, 'Submitted': 42, 'Approved': 50,
@@ -98,8 +110,11 @@ export default class OpportunityKanban extends LightningElement {
             const palette = AVATAR_PALETTES[hashIndex(ownerName, AVATAR_PALETTES.length)];
 
             const tags = [];
-            if (opp.Type)      tags.push({ key: 'type',   label: opp.Type,            tagClass: 'kb-tag kb-tag-blue' });
-            if (opp.Dealer__r) tags.push({ key: 'dealer', label: opp.Dealer__r.Name,  tagClass: 'kb-tag kb-tag-neutral' });
+            if (opp.Type) {
+                const tc = TYPE_TAG_COLORS[opp.Type] || TYPE_TAG_FALLBACK[hashIndex(opp.Type, TYPE_TAG_FALLBACK.length)];
+                tags.push({ key: 'type', label: opp.Type, tagStyle: `background:${tc.bg}; color:${tc.color};` });
+            }
+            if (opp.Dealer__r) tags.push({ key: 'dealer', label: opp.Dealer__r.Name, tagStyle: DEALER_TAG_STYLE });
 
             map[opp.StageName].push({
                 Id: opp.Id,
@@ -115,7 +130,7 @@ export default class OpportunityKanban extends LightningElement {
                 ownerInitials: getInitials(ownerName),
                 ownerName,
                 ownerAvatarStyle: `background:${palette.bg}; color:${palette.fg};`,
-                daysInStageLabel: daysInStage === 0 ? 'Today' : daysInStage === 1 ? '1d in stage' : `${daysInStage}d in stage`,
+                daysInStageLabel: daysInStage === 0 ? 'Today' : `${daysInStage}d`,
                 dotStyle: `background:${staleColor};`
             });
         });
@@ -133,16 +148,27 @@ export default class OpportunityKanban extends LightningElement {
     }
 
     handleDragStart(event) {
-        this.draggedOppId = event.currentTarget.dataset.id;
+        const id = event.currentTarget.dataset.id;
+        this.draggedOppId = id;
+        const sourceCol = this.columns.find(col => col.opportunities.some(o => o.Id === id));
+        this.draggedOpp = sourceCol ? sourceCol.opportunities.find(o => o.Id === id) : null;
+        this.dragSourceStage = sourceCol ? sourceCol.stage : null;
+        event.currentTarget.classList.add('dragging');
     }
 
-    handleDragOver(event) {
+    handleDragEnter(event) {
         event.preventDefault();
         event.currentTarget.classList.add('drag-over');
     }
 
+    handleDragOver(event) {
+        event.preventDefault();
+    }
+
     handleDragLeave(event) {
-        event.currentTarget.classList.remove('drag-over');
+        if (!event.currentTarget.contains(event.relatedTarget)) {
+            event.currentTarget.classList.remove('drag-over');
+        }
     }
 
     handleDrop(event) {
@@ -150,14 +176,30 @@ export default class OpportunityKanban extends LightningElement {
         const targetStage = event.currentTarget.dataset.stage;
         event.currentTarget.classList.remove('drag-over');
 
-        if (!this.draggedOppId || !targetStage) return;
+        if (!this.draggedOppId || !targetStage || targetStage === this.dragSourceStage) return;
 
-        const currentColumn = this.columns.find(col =>
-            col.opportunities.some(opp => opp.Id === this.draggedOppId)
-        );
-        if (currentColumn && currentColumn.stage === targetStage) return;
+        // Optimistic update — move card immediately
+        const snapshot = JSON.parse(JSON.stringify(this.columns));
+        this.columns = this.columns.map(col => {
+            if (col.stage === this.dragSourceStage) {
+                const opps = col.opportunities.filter(o => o.Id !== this.draggedOppId);
+                const total = opps.reduce((s, o) => s + (o.rawAmount || 0), 0);
+                return { ...col, opportunities: opps, count: opps.length, totalFormatted: total > 0 ? currencyFormatter.format(total) : null };
+            }
+            if (col.stage === targetStage) {
+                const opps = [...col.opportunities, this.draggedOpp];
+                const total = opps.reduce((s, o) => s + (o.rawAmount || 0), 0);
+                return { ...col, opportunities: opps, count: opps.length, totalFormatted: total > 0 ? currencyFormatter.format(total) : null };
+            }
+            return col;
+        });
 
-        updateOpportunityStage({ oppId: this.draggedOppId, newStage: targetStage })
+        const oppId = this.draggedOppId;
+        this.draggedOppId = null;
+        this.draggedOpp = null;
+        this.dragSourceStage = null;
+
+        updateOpportunityStage({ oppId, newStage: targetStage })
             .then(() => {
                 this.dispatchEvent(new ShowToastEvent({
                     title: 'Stage Updated',
@@ -167,13 +209,13 @@ export default class OpportunityKanban extends LightningElement {
                 return refreshApex(this.wiredResult);
             })
             .catch(err => {
+                // Roll back on failure
+                this.columns = snapshot;
                 this.dispatchEvent(new ShowToastEvent({
                     title: 'Error',
                     message: err.body ? err.body.message : 'Could not update stage.',
                     variant: 'error'
                 }));
             });
-
-        this.draggedOppId = null;
     }
 }

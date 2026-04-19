@@ -12,6 +12,7 @@
                     <div key={col.stage}
                          class="kb-column"
                          data-stage={col.stage}
+                         ondragenter={handleDragEnter}
                          ondragover={handleDragOver}
                          ondragleave={handleDragLeave}
                          ondrop={handleDrop}>
@@ -39,7 +40,7 @@
                                     <template if:true={opp.tags.length}>
                                         <div class="kb-tags">
                                             <template for:each={opp.tags} for:item="tag">
-                                                <span key={tag.key} class={tag.tagClass}>{tag.label}</span>
+                                                <span key={tag.key} class="kb-tag" style={tag.tagStyle}>{tag.label}</span>
                                             </template>
                                         </div>
                                     </template>

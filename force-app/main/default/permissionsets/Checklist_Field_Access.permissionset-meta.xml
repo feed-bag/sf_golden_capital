@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Grants read access to Checklist__c fields visible to all users and accessible via API.</description>
+    <fieldPermissions>
+        <editable>false</editable>
+        <field>Checklist__c.Dealer_Visible__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <hasActivationRequired>false</hasActivationRequired>
+    <label>Checklist Field Access</label>
+</PermissionSet>

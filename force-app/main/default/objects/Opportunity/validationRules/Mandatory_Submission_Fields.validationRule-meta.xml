@@ -2,15 +2,15 @@
 <ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Mandatory_Submission_Fields</fullName>
     <active>true</active>
-    <description>When Type is Equipment, both the Equipment field and at least one related Equipment record are required to move to Submitted.</description>
+    <description>When Type is Equipment, Equipment Description must be filled in and at least one Equipment record must be linked to move to Submitted.</description>
     <errorConditionFormula>AND(
-  ISPICKVAL(StageName, &quot;Submitted&quot;),
-  ISPICKVAL(Type, &quot;Equipment&quot;),
+  ISPICKVAL(StageName, "Submitted"),
+  ISPICKVAL(Type, "Equipment"),
   OR(
     ISBLANK(Equipment__c),
     Equipment_Count__c = 0
   )
 )</errorConditionFormula>
     <errorDisplayField>Equipment__c</errorDisplayField>
-    <errorMessage>The Equipment field must be populated and at least one Equipment record must be linked to submit an Equipment deal.</errorMessage>
+    <errorMessage>Equipment Description must be filled in and at least one Equipment record must be linked to submit an Equipment deal.</errorMessage>
 </ValidationRule>

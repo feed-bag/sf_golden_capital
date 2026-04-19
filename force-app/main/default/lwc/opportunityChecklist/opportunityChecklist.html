@@ -1,119 +1,111 @@
 <template>
-    <lightning-card title="Checklist" icon-name="standard:task2">
+    <lightning-card>
         <div slot="actions">
-            <lightning-button
-                label="Add Item"
-                icon-name="utility:add"
-                onclick={handleOpenAddModal}
-            ></lightning-button>
+            <lightning-button label="Add Item" icon-name="utility:add" onclick={handleOpenAddModal}></lightning-button>
         </div>
 
-        <div class="slds-var-p-around_small">
+        <div class="oc-outer">
 
-            <!-- Loading state -->
             <template if:true={isLoading}>
                 <lightning-spinner alternative-text="Loading" size="small"></lightning-spinner>
             </template>
 
-            <!-- Error state -->
             <template if:true={error}>
-                <div class="slds-text-color_error slds-var-p-around_small">
-                    An error occurred loading the checklist.
-                </div>
+                <div class="oc-error">An error occurred loading the checklist.</div>
             </template>
 
-            <!-- Empty state -->
             <template if:true={isEmpty}>
-                <div class="slds-illustration slds-illustration_small slds-var-p-around_medium">
-                    <p class="slds-text-body_regular slds-text-color_weak">
-                        No checklist items yet. Items will be added automatically when the opportunity reaches a trigger stage, or you can add them manually.
-                    </p>
+                <div class="oc-empty">No checklist items yet. Items are added automatically when the opportunity reaches a trigger stage, or you can add them manually.</div>
+            </template>
+
+            <template if:true={hasGroups}>
+                <div class="oc-tray">
+                    <template for:each={groups} for:item="group">
+                        <div key={group.templateId} class="oc-group">
+
+                            <!-- Group header -->
+                            <div class="oc-group-header" onclick={handleToggleSection} data-template-id={group.templateId}>
+                                <div class="oc-group-header-left">
+                                    <lightning-icon icon-name={group.chevronIcon} size="xx-small" class="oc-chevron"></lightning-icon>
+                                    <span class="oc-group-name">{group.templateName}</span>
+                                </div>
+                                <span class={group.progressClass}>{group.completeCount}/{group.totalCount}</span>
+                            </div>
+
+                            <!-- Items -->
+                            <template if:true={group.isExpanded}>
+                                <div class="oc-items">
+                                    <template for:each={group.items} for:item="item">
+                                        <div key={item.Id} class="c-row">
+
+                                            <!-- Main row -->
+                                            <div class="c-inner">
+                                                <!-- Checkbox -->
+                                                <div class={item.checkClass} data-item-id={item.Id} onclick={handleToggleComplete} role="checkbox" tabindex="0" aria-checked={item.Complete__c}></div>
+
+                                                <!-- Title -->
+                                                <p class={item.titleClass}>{item.Name__c}</p>
+
+                                                <!-- Due date -->
+                                                <template if:true={item.Due_Date__c}>
+                                                    <span class="c-due">{item.formattedDueDate}</span>
+                                                </template>
+
+                                                <!-- Dealer visible toggle -->
+                                                <div class="c-dealer-switch" data-item-id={item.Id} onclick={handleToggleDealerVisible}>
+                                                    <span class={item.switchLabelClass}>Dealer</span>
+                                                    <div class={item.trackClass}>
+                                                        <div class="c-thumb"></div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="c-divider"></div>
+
+                                                <!-- Delete -->
+                                                <button class="trash-btn" data-item-id={item.Id} onclick={handleDeleteItem} aria-label="Delete item">
+                                                    <svg viewBox="0 0 14 14" fill="none" aria-hidden="true">
+                                                        <path d="M2 3.5h10M5.5 3.5V2.5a1 1 0 011-1h1a1 1 0 011 1v1M3 3.5l.5 8a1 1 0 001 1h5a1 1 0 001-1l.5-8M6 6v4M8 6v4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+                                                    </svg>
+                                                </button>
+                                            </div>
+
+                                            <!-- Notes (dealer visible only) -->
+                                            <template if:true={item.Dealer_Visible__c}>
+                                                <div class="c-notes">
+                                                    <div class="c-notes-label">
+                                                        <span class="c-notes-label-left">
+                                                            <svg width="11" height="11" viewBox="0 0 11 11" fill="none" aria-hidden="true">
+                                                                <path d="M2 2h7v6H6L2 10V2z" stroke="#1a2d4d" stroke-width="1.1" stroke-linejoin="round"/>
+                                                            </svg>
+                                                            Dealer note
+                                                        </span>
+                                                        <template if:true={item.lastModifiedLabel}>
+                                                            <span class="c-notes-label-meta">edited {item.lastModifiedLabel}</span>
+                                                        </template>
+                                                    </div>
+                                                    <textarea class="c-textarea" data-item-id={item.Id} onchange={handleNoteChange} placeholder="Add a note visible to the dealer..."></textarea>
+                                                    <div class="c-notes-footer">
+                                                        <span class="c-notes-count">{item.noteLength} chars</span>
+                                                        <button class="c-notes-save" data-item-id={item.Id} onclick={handleSaveNote}>Save note</button>
+                                                    </div>
+                                                </div>
+                                            </template>
+
+                                        </div>
+                                    </template>
+                                </div>
+
+                                <!-- Add to section -->
+                                <div class="oc-add-row">
+                                    <lightning-button label="Add item" icon-name="utility:add" variant="base" size="small" data-template-id={group.templateId} onclick={handleOpenAddModal}></lightning-button>
+                                </div>
+                            </template>
+
+                        </div>
+                    </template>
                 </div>
             </template>
 
-            <!-- Checklist groups -->
-            <template if:true={hasGroups}>
-                <template for:each={groups} for:item="group">
-                    <div key={group.templateId} class="checklist-group slds-var-m-bottom_small">
-                        <!-- Group header -->
-                        <div class="group-header slds-grid slds-grid_align-spread slds-var-p-vertical_x-small slds-var-p-horizontal_small" onclick={handleToggleSection} data-template-id={group.templateId}>
-                            <div class="slds-grid slds-grid_vertical-align-center">
-                                <lightning-icon
-                                    icon-name={group.chevronIcon}
-                                    size="xx-small"
-                                    class="slds-var-m-right_x-small"
-                                ></lightning-icon>
-                                <span class="slds-text-heading_small">{group.templateName}</span>
-                            </div>
-                            <div class="slds-grid slds-grid_vertical-align-center">
-                                <span class={group.progressClass}>
-                                    {group.completeCount}/{group.totalCount}
-                                </span>
-                                <template if:true={group.allComplete}>
-                                    <lightning-icon
-                                        icon-name="utility:check"
-                                        size="xx-small"
-                                        variant="success"
-                                        class="slds-var-m-left_x-small"
-                                    ></lightning-icon>
-                                </template>
-                            </div>
-                        </div>
-
-                        <!-- Group items -->
-                        <template if:true={group.isExpanded}>
-                            <ul class="slds-has-dividers_top-space group-items">
-                                <template for:each={group.items} for:item="item">
-                                    <li key={item.Id} class="slds-item slds-grid slds-grid_vertical-align-center slds-grid_align-spread slds-var-p-horizontal_small slds-var-p-vertical_xx-small checklist-item">
-                                        <div class="slds-grid slds-grid_vertical-align-center slds-col">
-                                            <lightning-input
-                                                type="checkbox"
-                                                checked={item.Complete__c}
-                                                data-item-id={item.Id}
-                                                onchange={handleToggleComplete}
-                                                label={item.Name__c}
-                                                class="item-checkbox"
-                                            ></lightning-input>
-                                        </div>
-                                        <div class="slds-grid slds-grid_vertical-align-center slds-no-flex">
-                                            <template if:true={item.Dealer_Visible__c}>
-                                                <lightning-badge label="Dealer" class="dealer-badge slds-var-m-right_x-small"></lightning-badge>
-                                            </template>
-                                            <template if:true={item.Due_Date__c}>
-                                                <span class={item.dueDateClass}>
-                                                    {item.formattedDueDate}
-                                                </span>
-                                            </template>
-                                            <lightning-button-icon
-                                                icon-name="utility:delete"
-                                                variant="bare"
-                                                size="small"
-                                                alternative-text="Delete"
-                                                data-item-id={item.Id}
-                                                onclick={handleDeleteItem}
-                                                class="slds-var-m-left_x-small delete-btn"
-                                            ></lightning-button-icon>
-                                        </div>
-                                    </li>
-                                </template>
-                            </ul>
-
-                            <!-- Add item to this section -->
-                            <div class="slds-var-p-horizontal_small slds-var-p-top_xx-small">
-                                <lightning-button
-                                    label="Add item"
-                                    icon-name="utility:add"
-                                    variant="base"
-                                    size="small"
-                                    data-template-id={group.templateId}
-                                    onclick={handleOpenAddModal}
-                                    class="add-section-btn"
-                                ></lightning-button>
-                            </div>
-                        </template>
-                    </div>
-                </template>
-            </template>
         </div>
     </lightning-card>
 
@@ -128,45 +120,16 @@
                     <h2 class="slds-modal__title slds-hyphenate">Add Checklist Item</h2>
                 </header>
                 <div class="slds-modal__content slds-var-p-around_medium">
-                    <lightning-input
-                        label="Item Name"
-                        value={newItemName}
-                        onchange={handleNewItemNameChange}
-                        required
-                        placeholder="Enter item name..."
-                    ></lightning-input>
-                    <lightning-input
-                        type="date"
-                        label="Due Date"
-                        value={newItemDueDate}
-                        onchange={handleNewItemDueDateChange}
-                        class="slds-var-m-top_small"
-                    ></lightning-input>
-                    <lightning-input
-                        type="checkbox"
-                        label="Visible to Dealer"
-                        checked={newItemDealerVisible}
-                        onchange={handleNewItemDealerVisibleChange}
-                        class="slds-var-m-top_small"
-                    ></lightning-input>
+                    <lightning-input label="Item Name" value={newItemName} onchange={handleNewItemNameChange} required placeholder="Enter item name..."></lightning-input>
+                    <lightning-input type="date" label="Due Date" value={newItemDueDate} onchange={handleNewItemDueDateChange} class="slds-var-m-top_small"></lightning-input>
+                    <lightning-input type="checkbox" label="Visible to Dealer" checked={newItemDealerVisible} onchange={handleNewItemDealerVisibleChange} class="slds-var-m-top_small"></lightning-input>
                     <template if:true={hasTemplates}>
-                        <lightning-combobox
-                            label="Section"
-                            value={newItemTemplateId}
-                            options={templateOptions}
-                            onchange={handleNewItemTemplateChange}
-                            class="slds-var-m-top_small"
-                        ></lightning-combobox>
+                        <lightning-combobox label="Section" value={newItemTemplateId} options={templateOptions} onchange={handleNewItemTemplateChange} class="slds-var-m-top_small"></lightning-combobox>
                     </template>
                 </div>
                 <footer class="slds-modal__footer">
                     <lightning-button label="Cancel" onclick={handleCloseAddModal}></lightning-button>
-                    <lightning-button
-                        label="Add Item"
-                        variant="brand"
-                        onclick={handleSaveNewItem}
-                        disabled={isSaving}
-                    ></lightning-button>
+                    <lightning-button label="Add Item" variant="brand" onclick={handleSaveNewItem} disabled={isSaving}></lightning-button>
                 </footer>
             </div>
         </section>

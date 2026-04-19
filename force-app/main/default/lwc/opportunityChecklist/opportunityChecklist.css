@@ -1,79 +1,331 @@
-.checklist-group {
-    border: 1px solid #dddbda;
-    border-radius: 4px;
-    overflow: hidden;
+.oc-outer {
+    padding: 0 12px 12px;
 }
 
-.group-header {
-    background-color: #f3f3f3;
+.oc-error {
+    color: #c23934;
+    font-size: 13px;
+    padding: 12px 0;
+}
+
+.oc-empty {
+    font-size: 13px;
+    color: #706e6b;
+    padding: 16px 0;
+    line-height: 1.5;
+}
+
+/* Tray */
+.oc-tray {
+    background: #f7f8fa;
+    border-radius: 8px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+/* Group */
+.oc-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.oc-group-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 7px 10px;
+    background: #1a2d4d;
+    border-radius: 6px;
     cursor: pointer;
     user-select: none;
-    border-bottom: 1px solid #dddbda;
 }
 
-.group-header:hover {
-    background-color: #e8e8e8;
+.oc-group-header-left {
+    display: flex;
+    align-items: center;
+    gap: 6px;
 }
 
-.group-items {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+.oc-chevron {
+    --lwc-colorTextIconDefault: rgba(255,255,255,0.7);
 }
 
-.checklist-item {
-    border-bottom: 1px solid #f3f3f3;
-}
-
-.checklist-item:last-child {
-    border-bottom: none;
-}
-
-.item-checkbox {
-    flex: 1;
+.oc-group-name {
+    font-size: 12px;
+    font-weight: 600;
+    color: #fff;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
 }
 
 .progress-badge {
-    font-size: 0.75rem;
-    color: #706e6b;
+    font-size: 11px;
+    color: rgba(255,255,255,0.65);
     font-weight: 600;
+    font-variant-numeric: tabular-nums;
 }
 
 .progress-complete {
-    color: #2e844a;
+    color: #6ee49b;
 }
 
-.dealer-badge {
-    --sds-c-badge-color-background: #e8f4fd;
-    --sds-c-badge-text-color: #0070d2;
-    font-size: 0.7rem;
+.oc-items {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
 }
 
-.due-date {
-    font-size: 0.75rem;
+.oc-add-row {
+    padding: 2px 4px 4px;
+}
+
+/* Card row */
+.c-row {
+    background: #fff;
+    border: 1px solid #e5e5e5;
+    border-radius: 10px;
+    padding: 2px;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.c-row:hover {
+    box-shadow: 0 0 0 3px rgba(26, 45, 77, 0.06);
+    border-color: #1a2d4d;
+}
+
+.c-inner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 10px 12px 14px;
+}
+
+/* Custom checkbox */
+.c-check {
+    width: 22px;
+    height: 22px;
+    border: 2px solid #cbd5e1;
+    border-radius: 6px;
+    background: #fff;
+    flex-shrink: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: border-color 0.15s, background 0.15s;
+}
+
+.c-check:hover {
+    border-color: #1a2d4d;
+}
+
+.c-check.checked {
+    background: linear-gradient(135deg, #1a2d4d 0%, #2e4a75 100%);
+    border-color: #1a2d4d;
+}
+
+.c-check.checked::after {
+    content: '';
+    width: 6px;
+    height: 10px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg) translate(-0.5px, -0.5px);
+    display: block;
+}
+
+/* Title */
+.c-title {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 500;
+    color: #1a2d4d;
+    margin: 0;
+    min-width: 0;
+    line-height: 1.4;
+}
+
+.c-title.done {
+    color: #9ca3af;
+    text-decoration: line-through;
+    text-decoration-color: #cbd5e1;
+}
+
+/* Due date */
+.c-due {
+    font-size: 11px;
     color: #706e6b;
     white-space: nowrap;
+    flex-shrink: 0;
 }
 
-.due-overdue {
-    color: #c23934;
-    font-weight: 600;
+/* Dealer visible toggle */
+.c-dealer-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    flex-shrink: 0;
 }
 
-.due-today {
-    color: #dd7a01;
-    font-weight: 600;
+.c-switch-label {
+    font-size: 11px;
+    color: #9ca3af;
+    white-space: nowrap;
+    transition: color 0.12s;
 }
 
-.delete-btn {
-    opacity: 0;
-    transition: opacity 0.15s;
+.c-switch-label.active {
+    color: #8b6914;
+    font-weight: 500;
 }
 
-.checklist-item:hover .delete-btn {
-    opacity: 1;
+.c-track {
+    width: 32px;
+    height: 18px;
+    background: #e5e5e5;
+    border-radius: 999px;
+    position: relative;
+    transition: background 0.15s;
+    flex-shrink: 0;
 }
 
-.add-section-btn {
-    font-size: 0.75rem;
+.c-track.active {
+    background: #c8954a;
 }
+
+.c-thumb {
+    width: 14px;
+    height: 14px;
+    background: #fff;
+    border-radius: 50%;
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    transition: left 0.15s;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.15);
+}
+
+.c-track.active .c-thumb {
+    left: 16px;
+}
+
+.c-divider {
+    width: 1px;
+    height: 18px;
+    background: #e5e5e5;
+    flex-shrink: 0;
+}
+
+/* Delete button */
+.trash-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #9ca3af;
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    flex-shrink: 0;
+    transition: color 0.12s, background 0.12s;
+    padding: 0;
+}
+
+.trash-btn:hover {
+    color: #b91c1c;
+    background: #fef2f2;
+}
+
+.trash-btn svg {
+    width: 14px;
+    height: 14px;
+    display: block;
+}
+
+/* Notes section */
+.c-notes {
+    margin: 0 10px 10px;
+}
+
+.c-notes-label {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 0 0 6px;
+    padding: 0 2px;
+}
+
+.c-notes-label-left {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: #1a2d4d;
+    font-weight: 500;
+}
+
+.c-notes-label-meta {
+    font-size: 10px;
+    color: #9ca3af;
+}
+
+.c-textarea {
+    width: 100%;
+    min-height: 72px;
+    background: #fff;
+    border: 1px solid #c5c5c5;
+    border-radius: 4px;
+    padding: 8px 10px;
+    font-family: inherit;
+    font-size: 13px;
+    color: #1a2d4d;
+    line-height: 1.5;
+    resize: vertical;
+    box-sizing: border-box;
+    transition: border-color 0.12s;
+}
+
+.c-textarea:hover { border-color: #9ca3af; }
+
+.c-textarea:focus {
+    outline: none;
+    border-color: #1a2d4d;
+}
+
+.c-textarea::placeholder { color: #9ca3af; }
+
+.c-notes-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 8px;
+    padding: 0 2px;
+}
+
+.c-notes-count {
+    font-size: 10px;
+    color: #9ca3af;
+    font-variant-numeric: tabular-nums;
+}
+
+.c-notes-save {
+    font-size: 12px;
+    color: #fff;
+    background: #1a2d4d;
+    border: 1px solid #1a2d4d;
+    border-radius: 4px;
+    padding: 7px 16px;
+    cursor: pointer;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    transition: background 0.12s, border-color 0.12s;
+}
+
+.c-notes-save:hover { background: #0f1f3a; border-color: #0f1f3a; }
+.c-notes-save:active { background: #0a1528; }

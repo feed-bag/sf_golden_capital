@@ -12,6 +12,7 @@ public with sharing class OpportunityChecklistController {
 
         List<Checklist__c> items = [
             SELECT Id, Name__c, Complete__c, Due_Date__c, Dealer_Visible__c,
+                   Notes__c, LastModifiedDate,
                    Checklist_Template__c, Checklist_Template__r.Name,
                    Checklist_Template__r.Stage__c
             FROM Checklist__c
@@ -48,7 +49,7 @@ public with sharing class OpportunityChecklistController {
         // Also include ad-hoc items with no template
         List<Checklist__c> adHocItems = [
             SELECT Id, Name__c, Complete__c, Due_Date__c, Dealer_Visible__c,
-                   Checklist_Template__c
+                   Notes__c, LastModifiedDate, Checklist_Template__c
             FROM Checklist__c
             WHERE Opportunity__c = :opportunityId
             AND Checklist_Template__c = null
@@ -115,6 +116,22 @@ public with sharing class OpportunityChecklistController {
     @AuraEnabled
     public static void deleteItem(Id itemId) {
         delete new Checklist__c(Id = itemId);
+    }
+
+    /**
+     * Save notes on a checklist item.
+     */
+    @AuraEnabled
+    public static void saveNotes(Id itemId, String notes) {
+        update new Checklist__c(Id = itemId, Notes__c = notes);
+    }
+
+    /**
+     * Update the Dealer_Visible__c field on a checklist item.
+     */
+    @AuraEnabled
+    public static void updateDealerVisible(Id itemId, Boolean dealerVisible) {
+        update new Checklist__c(Id = itemId, Dealer_Visible__c = dealerVisible);
     }
 
     /**

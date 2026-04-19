@@ -6,6 +6,11 @@
         <field>Checklist__c.Dealer_Visible__c</field>
         <readable>true</readable>
     </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>Checklist__c.Notes__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
     <hasActivationRequired>false</hasActivationRequired>
     <label>Checklist Field Access</label>
 </PermissionSet>

@@ -4,8 +4,8 @@
     <active>true</active>
     <description>When Type is Equipment, Equipment Description must be filled in and at least one Equipment record must be linked to move to Submitted.</description>
     <errorConditionFormula>AND(
-  ISPICKVAL(StageName, "Submitted"),
-  ISPICKVAL(Type, "Equipment"),
+  ISPICKVAL(StageName, &quot;Submitted&quot;),
+  ISPICKVAL(Type, &quot;Equipment&quot;),
   OR(
     ISBLANK(Equipment__c),
     Equipment_Count__c = 0

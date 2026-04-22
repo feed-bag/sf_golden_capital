@@ -17,6 +17,10 @@ function timeAgo(dateStr) {
     return `${Math.floor(hours / 24)}d ago`;
 }
 
+function sortItems(items) {
+    return [...items].sort((a, b) => (a.Complete__c === b.Complete__c ? 0 : a.Complete__c ? 1 : -1));
+}
+
 function mapItem(item) {
     return {
         ...item,
@@ -66,7 +70,7 @@ export default class OpportunityChecklist extends LightningElement {
                     progressClass: group.completeCount === group.totalCount && group.totalCount > 0
                         ? 'progress-badge progress-complete'
                         : 'progress-badge',
-                    items: group.items.map(mapItem)
+                    items: sortItems(group.items.map(mapItem))
                 };
             });
         } else if (result.error) {
@@ -234,10 +238,10 @@ export default class OpportunityChecklist extends LightningElement {
     _updateItem(itemId, changes) {
         this.groups = this.groups.map(group => ({
             ...group,
-            items: group.items.map(item => {
+            items: sortItems(group.items.map(item => {
                 if (item.Id !== itemId) return item;
                 return mapItem({ ...item, ...changes });
-            })
+            }))
         }));
     }
 

@@ -3,7 +3,6 @@
     <fullName>Equipment_Count__c</fullName>
     <label>Equipment Count</label>
     <summaryForeignKey>Equipment__c.Opportunity__c</summaryForeignKey>
-    <summaryOperation>COUNT</summaryOperation>
-    <trackTrending>false</trackTrending>
+    <summaryOperation>count</summaryOperation>
     <type>Summary</type>
 </CustomField>

@@ -3,11 +3,10 @@
     <fullName>Phone_Digits__c</fullName>
     <description>Phone number with all formatting stripped (digits only). Used for CreditKey API which requires a 10-digit string with no formatting.</description>
     <externalId>false</externalId>
-    <formula>SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(Phone, "(", ""), ")", ""), "-", ""), " ", "")</formula>
+    <formula>SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(SUBSTITUTE(Phone, &quot;(&quot;, &quot;&quot;), &quot;)&quot;, &quot;&quot;), &quot;-&quot;, &quot;&quot;), &quot; &quot;, &quot;&quot;)</formula>
     <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
     <label>Phone Digits</label>
     <required>false</required>
-    <trackTrending>false</trackTrending>
     <type>Text</type>
     <unique>false</unique>
 </CustomField>

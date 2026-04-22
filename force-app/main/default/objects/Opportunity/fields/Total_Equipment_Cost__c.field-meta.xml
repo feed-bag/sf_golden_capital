@@ -4,6 +4,6 @@
     <label>Total Equipment Cost</label>
     <summarizedField>Equipment__c.Total_Cost__c</summarizedField>
     <summaryForeignKey>Equipment__c.Opportunity__c</summaryForeignKey>
-    <summaryOperation>SUM</summaryOperation>
+    <summaryOperation>sum</summaryOperation>
     <type>Summary</type>
 </CustomField>

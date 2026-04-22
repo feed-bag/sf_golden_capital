@@ -3,5 +3,7 @@
     <fullName>Dealer_Cleared__c</fullName>
     <defaultValue>false</defaultValue>
     <label>Dealer Cleared</label>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
     <type>Checkbox</type>
 </CustomField>

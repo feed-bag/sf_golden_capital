@@ -4,7 +4,7 @@
     <active>true</active>
     <description>Account Name must be populated to move to Submitted.</description>
     <errorConditionFormula>AND(
-  ISPICKVAL(StageName, "Submitted"),
+  ISPICKVAL(StageName, &quot;Submitted&quot;),
   ISBLANK(AccountId)
 )</errorConditionFormula>
     <errorDisplayField>AccountId</errorDisplayField>

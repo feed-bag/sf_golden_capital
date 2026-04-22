@@ -158,7 +158,7 @@
     <enableSearch>false</enableSearch>
     <enableSharing>true</enableSharing>
     <enableStreamingApi>true</enableStreamingApi>
-    <externalSharingModel>Private</externalSharingModel>
+    <externalSharingModel>ControlledByParent</externalSharingModel>
     <label>Equipment</label>
     <nameField>
         <label>Equipment Name</label>
@@ -166,7 +166,7 @@
     </nameField>
     <pluralLabel>Equipment</pluralLabel>
     <searchLayouts></searchLayouts>
-    <sharingModel>ReadWrite</sharingModel>
+    <sharingModel>ControlledByParent</sharingModel>
     <startsWith>Vowel</startsWith>
     <visibility>Public</visibility>
 </CustomObject>

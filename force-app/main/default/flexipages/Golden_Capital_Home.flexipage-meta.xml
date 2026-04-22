@@ -3,7 +3,7 @@
     <flexiPageRegions>
         <itemInstances>
             <componentInstance>
-                <componentName>c:homeDashboard</componentName>
+                <componentName>homeDashboard</componentName>
                 <identifier>homeDashboard</identifier>
             </componentInstance>
         </itemInstances>

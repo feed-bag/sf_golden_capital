@@ -7,6 +7,14 @@
             <p class="kb-error">Error loading pipeline data.</p>
         </template>
         <template if:true={columns}>
+            <div class="kb-toolbar">
+                <label class="kb-filter-label" for="ownerFilter">Owner</label>
+                <select id="ownerFilter" class="kb-filter-select" onchange={handleOwnerFilter}>
+                    <template for:each={ownerOptions} for:item="opt">
+                        <option key={opt.value} value={opt.value} selected={opt.selected}>{opt.label}</option>
+                    </template>
+                </select>
+            </div>
             <div class="kb-board">
                 <template for:each={columns} for:item="col">
                     <div key={col.stage}

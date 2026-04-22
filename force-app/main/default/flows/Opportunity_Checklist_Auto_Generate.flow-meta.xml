@@ -1,57 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>66.0</apiVersion>
-    <description>Auto-generates Checklist__c items from the matching Checklist_Template__c when an Opportunity stage changes to App In, Pre Docs, or Docs Out. Prevents duplicate creation if items already exist for that template on the opportunity.</description>
-    <environments>Default</environments>
-    <interviewLabel>Opportunity Checklist Auto Generate {!$Flow.CurrentDateTime}</interviewLabel>
-    <label>Opportunity Checklist Auto Generate</label>
-    <processMetadataValues>
-        <name>BuilderType</name>
-        <value>
-            <stringValue>LightningFlowBuilder</stringValue>
-        </value>
-    </processMetadataValues>
-    <processType>AutoLaunchedFlow</processType>
-    <start>
-        <locationX>176</locationX>
-        <locationY>0</locationY>
-        <filterLogic>1 OR 2 OR 3</filterLogic>
-        <filters>
-            <field>StageName</field>
-            <operator>EqualTo</operator>
-            <value>
-                <stringValue>App In</stringValue>
-            </value>
-        </filters>
-        <filters>
-            <field>StageName</field>
-            <operator>EqualTo</operator>
-            <value>
-                <stringValue>Pre Docs</stringValue>
-            </value>
-        </filters>
-        <filters>
-            <field>StageName</field>
-            <operator>EqualTo</operator>
-            <value>
-                <stringValue>Docs Out</stringValue>
-            </value>
-        </filters>
-        <connector>
-            <targetReference>Get_Matching_Template</targetReference>
-        </connector>
-        <object>Opportunity</object>
-        <recordTriggerType>CreateAndUpdate</recordTriggerType>
-        <triggerType>RecordAfterSave</triggerType>
-        <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
-    </start>
-    <status>Active</status>
-
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
     <assignments>
         <name>Assign_Checklist_Item</name>
         <label>Assign Checklist Item Fields</label>
-        <locationX>396</locationX>
-        <locationY>840</locationY>
+        <locationX>750</locationX>
+        <locationY>569</locationY>
         <assignmentItems>
             <assignToReference>varCurrentItem.Name__c</assignToReference>
             <operator>Assign</operator>
@@ -98,12 +53,33 @@
             <targetReference>Loop_Template_Items</targetReference>
         </connector>
     </assignments>
-
+    <decisions>
+        <name>Check_Has_Template_Items</name>
+        <label>Has Template Items?</label>
+        <locationX>159</locationX>
+        <locationY>570</locationY>
+        <defaultConnectorLabel>No Items - Stop</defaultConnectorLabel>
+        <rules>
+            <name>Has_Items_Yes</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>varTemplateItems</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Loop_Template_Items</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+    </decisions>
     <decisions>
         <name>Check_Template_Found</name>
         <label>Template Found?</label>
-        <locationX>176</locationX>
-        <locationY>240</locationY>
+        <locationX>170</locationX>
+        <locationY>275</locationY>
         <defaultConnectorLabel>No - Stop</defaultConnectorLabel>
         <rules>
             <name>Template_Found_Yes</name>
@@ -124,8 +100,11 @@
     <decisions>
         <name>Items_Already_Exist</name>
         <label>Items Already Exist?</label>
-        <locationX>176</locationX>
-        <locationY>480</locationY>
+        <locationX>428</locationX>
+        <locationY>435</locationY>
+        <defaultConnector>
+            <targetReference>Get_Template_Items</targetReference>
+        </defaultConnector>
         <defaultConnectorLabel>No - Create Items</defaultConnectorLabel>
         <rules>
             <name>Items_Exist_Yes</name>
@@ -139,38 +118,16 @@
             </conditions>
             <label>Yes - Skip</label>
         </rules>
-        <defaultConnector>
-            <targetReference>Get_Template_Items</targetReference>
-        </defaultConnector>
     </decisions>
-    <decisions>
-        <name>Check_Has_Template_Items</name>
-        <label>Has Template Items?</label>
-        <locationX>176</locationX>
-        <locationY>720</locationY>
-        <defaultConnectorLabel>No Items - Stop</defaultConnectorLabel>
-        <rules>
-            <name>Has_Items_Yes</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>varTemplateItems</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue>
-                    <booleanValue>false</booleanValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Loop_Template_Items</targetReference>
-            </connector>
-            <label>Yes</label>
-        </rules>
-    </decisions>
-
+    <description>Auto-generates Checklist__c items from the matching Checklist_Template__c when an Opportunity stage changes to App In, Pre Docs, or Docs Out. Prevents duplicate creation if items already exist for that template on the opportunity.</description>
+    <environments>Default</environments>
+    <interviewLabel>Opportunity Checklist Auto Generate {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Opportunity Checklist Auto Generate</label>
     <loops>
         <name>Loop_Template_Items</name>
         <label>Loop Template Items</label>
-        <locationX>176</locationX>
-        <locationY>840</locationY>
+        <locationX>397</locationX>
+        <locationY>567</locationY>
         <collectionReference>varTemplateItems</collectionReference>
         <iterationOrder>Asc</iterationOrder>
         <nextValueConnector>
@@ -180,55 +137,36 @@
             <targetReference>Create_All_Checklist_Items</targetReference>
         </noMoreValuesConnector>
     </loops>
-
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>FREE_FORM_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
     <recordCreates>
         <name>Create_All_Checklist_Items</name>
         <label>Create All Checklist Items</label>
-        <locationX>176</locationX>
-        <locationY>960</locationY>
+        <locationX>398</locationX>
+        <locationY>789</locationY>
         <inputReference>varNewChecklistItems</inputReference>
     </recordCreates>
-
-    <recordLookups>
-        <name>Get_Matching_Template</name>
-        <label>Get Matching Template</label>
-        <locationX>176</locationX>
-        <locationY>120</locationY>
-        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
-        <connector>
-            <targetReference>Check_Template_Found</targetReference>
-        </connector>
-        <filterLogic>AND</filterLogic>
-        <filters>
-            <field>Stage__c</field>
-            <operator>EqualTo</operator>
-            <value>
-                <elementReference>$Record.StageName</elementReference>
-            </value>
-        </filters>
-        <filters>
-            <field>Active__c</field>
-            <operator>EqualTo</operator>
-            <value>
-                <booleanValue>true</booleanValue>
-            </value>
-        </filters>
-        <getFirstRecordOnly>true</getFirstRecordOnly>
-        <object>Checklist_Template__c</object>
-        <outputReference>varTemplate</outputReference>
-        <queriedFields>Id</queriedFields>
-        <queriedFields>Name</queriedFields>
-    </recordLookups>
     <recordLookups>
         <name>Check_Existing_Items</name>
         <label>Check Existing Items</label>
-        <locationX>176</locationX>
-        <locationY>360</locationY>
+        <locationX>441</locationX>
+        <locationY>281</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
             <targetReference>Items_Already_Exist</targetReference>
         </connector>
-        <filterLogic>AND</filterLogic>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>Opportunity__c</field>
             <operator>EqualTo</operator>
@@ -243,21 +181,49 @@
                 <elementReference>varTemplate.Id</elementReference>
             </value>
         </filters>
-        <getFirstRecordOnly>true</getFirstRecordOnly>
         <object>Checklist__c</object>
         <outputReference>varExistingItem</outputReference>
         <queriedFields>Id</queriedFields>
     </recordLookups>
     <recordLookups>
+        <name>Get_Matching_Template</name>
+        <label>Get Matching Template</label>
+        <locationX>12</locationX>
+        <locationY>273</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Check_Template_Found</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>Stage__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <elementReference>$Record.StageName</elementReference>
+            </value>
+        </filters>
+        <filters>
+            <field>Active__c</field>
+            <operator>EqualTo</operator>
+            <value>
+                <booleanValue>true</booleanValue>
+            </value>
+        </filters>
+        <object>Checklist_Template__c</object>
+        <outputReference>varTemplate</outputReference>
+        <queriedFields>Id</queriedFields>
+        <queriedFields>Name</queriedFields>
+    </recordLookups>
+    <recordLookups>
         <name>Get_Template_Items</name>
         <label>Get Template Items</label>
-        <locationX>176</locationX>
-        <locationY>600</locationY>
+        <locationX>169</locationX>
+        <locationY>441</locationY>
         <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
         <connector>
             <targetReference>Check_Has_Template_Items</targetReference>
         </connector>
-        <filterLogic>AND</filterLogic>
+        <filterLogic>and</filterLogic>
         <filters>
             <field>Checklist_Template__c</field>
             <operator>EqualTo</operator>
@@ -265,7 +231,6 @@
                 <elementReference>varTemplate.Id</elementReference>
             </value>
         </filters>
-        <getFirstRecordOnly>false</getFirstRecordOnly>
         <object>Checklist_Template_Item__c</object>
         <outputReference>varTemplateItems</outputReference>
         <queriedFields>Id</queriedFields>
@@ -276,17 +241,42 @@
         <sortField>Item_Order__c</sortField>
         <sortOrder>Asc</sortOrder>
     </recordLookups>
-
+    <start>
+        <locationX>176</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Get_Matching_Template</targetReference>
+        </connector>
+        <doesRequireRecordChangedToMeetCriteria>true</doesRequireRecordChangedToMeetCriteria>
+        <filterLogic>1 OR 2 OR 3</filterLogic>
+        <filters>
+            <field>StageName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>App In</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>StageName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Pre Docs</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>StageName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Docs Out</stringValue>
+            </value>
+        </filters>
+        <object>Opportunity</object>
+        <recordTriggerType>CreateAndUpdate</recordTriggerType>
+        <triggerType>RecordAfterSave</triggerType>
+    </start>
+    <status>Active</status>
     <variables>
-        <name>varTemplate</name>
-        <dataType>SObject</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-        <objectType>Checklist_Template__c</objectType>
-    </variables>
-    <variables>
-        <name>varExistingItem</name>
+        <name>varCurrentItem</name>
         <dataType>SObject</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
@@ -294,15 +284,7 @@
         <objectType>Checklist__c</objectType>
     </variables>
     <variables>
-        <name>varTemplateItems</name>
-        <dataType>SObject</dataType>
-        <isCollection>true</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-        <objectType>Checklist_Template_Item__c</objectType>
-    </variables>
-    <variables>
-        <name>varCurrentItem</name>
+        <name>varExistingItem</name>
         <dataType>SObject</dataType>
         <isCollection>false</isCollection>
         <isInput>false</isInput>
@@ -316,5 +298,21 @@
         <isInput>false</isInput>
         <isOutput>false</isOutput>
         <objectType>Checklist__c</objectType>
+    </variables>
+    <variables>
+        <name>varTemplate</name>
+        <dataType>SObject</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Checklist_Template__c</objectType>
+    </variables>
+    <variables>
+        <name>varTemplateItems</name>
+        <dataType>SObject</dataType>
+        <isCollection>true</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
+        <objectType>Checklist_Template_Item__c</objectType>
     </variables>
 </Flow>

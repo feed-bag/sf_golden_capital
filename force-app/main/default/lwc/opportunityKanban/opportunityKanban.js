@@ -1,6 +1,7 @@
 import { LightningElement, wire, track } from 'lwc';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import { refreshApex } from '@salesforce/apex';
+import userId from '@salesforce/user/Id';
 import getOpenOpportunities from '@salesforce/apex/OpportunityDashboardController.getOpenOpportunities';
 import updateOpportunityStage from '@salesforce/apex/OpportunityDashboardController.updateOpportunityStage';
 
@@ -39,11 +40,11 @@ const STAGE_PROGRESS = {
 };
 
 function stalenessColor(days) {
-    if (days <= 1)  return '#97C459'; // green
-    if (days <= 3)  return '#C8D96A'; // yellow-green
-    if (days <= 6)  return '#EF9F27'; // amber
-    if (days <= 13) return '#E8804A'; // orange
-    return '#E24B4A';                 // red
+    if (days <= 1)  return '#97C459';
+    if (days <= 3)  return '#C8D96A';
+    if (days <= 6)  return '#EF9F27';
+    if (days <= 13) return '#E8804A';
+    return '#E24B4A';
 }
 
 const AVATAR_PALETTES = [
@@ -75,13 +76,20 @@ function hashIndex(str, len) {
     return h % len;
 }
 
-
 export default class OpportunityKanban extends LightningElement {
     @track columns;
     @track isLoading = true;
     @track error;
+    @track filterOwnerId;
+
+    _allOpps = [];
+    _currentUserId = userId;
     draggedOppId;
     wiredResult;
+
+    connectedCallback() {
+        this.filterOwnerId = this._currentUserId;
+    }
 
     @wire(getOpenOpportunities)
     wiredOpportunities(result) {
@@ -89,11 +97,51 @@ export default class OpportunityKanban extends LightningElement {
         this.isLoading = false;
         if (result.data) {
             this.error = undefined;
-            this.buildColumns(result.data);
+            this._allOpps = result.data;
+            this._applyFilter();
         } else if (result.error) {
             this.error = result.error;
             this.columns = undefined;
         }
+    }
+
+    get ownerOptions() {
+        const seen = new Map();
+        this._allOpps.forEach(opp => {
+            if (opp.OwnerId && opp.Owner && !seen.has(opp.OwnerId)) {
+                seen.set(opp.OwnerId, opp.Owner.Name);
+            }
+        });
+        const options = [{ label: 'All Opportunities', value: '' }];
+        seen.forEach((name, id) => {
+            const label = id === this._currentUserId ? `My Opportunities (${name})` : name;
+            options.push({ label, value: id });
+        });
+        options.sort((a, b) => {
+            if (!a.value) return -1;
+            if (!b.value) return 1;
+            if (a.value === this._currentUserId) return -1;
+            if (b.value === this._currentUserId) return 1;
+            return a.label.localeCompare(b.label);
+        });
+        return options.map(o => ({ ...o, selected: o.value === (this.filterOwnerId || '') }));
+    }
+
+    get filterLabel() {
+        const opt = this.ownerOptions.find(o => o.value === (this.filterOwnerId || ''));
+        return opt ? opt.label : 'All Opportunities';
+    }
+
+    handleOwnerFilter(event) {
+        this.filterOwnerId = event.target.value || null;
+        this._applyFilter();
+    }
+
+    _applyFilter() {
+        const filtered = this.filterOwnerId
+            ? this._allOpps.filter(opp => opp.OwnerId === this.filterOwnerId)
+            : this._allOpps;
+        this.buildColumns(filtered);
     }
 
     buildColumns(opportunities) {
@@ -178,7 +226,6 @@ export default class OpportunityKanban extends LightningElement {
 
         if (!this.draggedOppId || !targetStage || targetStage === this.dragSourceStage) return;
 
-        // Optimistic update — move card immediately
         const snapshot = JSON.parse(JSON.stringify(this.columns));
         this.columns = this.columns.map(col => {
             if (col.stage === this.dragSourceStage) {
@@ -209,7 +256,6 @@ export default class OpportunityKanban extends LightningElement {
                 return refreshApex(this.wiredResult);
             })
             .catch(err => {
-                // Roll back on failure
                 this.columns = snapshot;
                 this.dispatchEvent(new ShowToastEvent({
                     title: 'Error',

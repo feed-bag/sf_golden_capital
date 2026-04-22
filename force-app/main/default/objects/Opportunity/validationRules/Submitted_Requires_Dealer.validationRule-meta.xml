@@ -4,7 +4,7 @@
     <active>true</active>
     <description>Dealer is required to move to Submitted unless the deal is marked as Private Party.</description>
     <errorConditionFormula>AND(
-  ISPICKVAL(StageName, "Submitted"),
+  ISPICKVAL(StageName, &quot;Submitted&quot;),
   ISBLANK(Dealer__c),
   NOT(Private_Party__c)
 )</errorConditionFormula>

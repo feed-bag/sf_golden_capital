@@ -159,7 +159,7 @@
     <enableSearch>false</enableSearch>
     <enableSharing>true</enableSharing>
     <enableStreamingApi>true</enableStreamingApi>
-    <externalSharingModel>Private</externalSharingModel>
+    <externalSharingModel>ControlledByParent</externalSharingModel>
     <label>App Submission</label>
     <nameField>
         <displayFormat>SUB#{000000}</displayFormat>
@@ -168,6 +168,6 @@
     </nameField>
     <pluralLabel>App Submissions</pluralLabel>
     <searchLayouts></searchLayouts>
-    <sharingModel>ReadWrite</sharingModel>
+    <sharingModel>ControlledByParent</sharingModel>
     <visibility>Public</visibility>
 </CustomObject>

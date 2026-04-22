@@ -1,33 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Flow xmlns="http://soap.sforce.com/2006/04/metadata">
     <apiVersion>62.0</apiVersion>
-    <description>On new Approval creation, defaults RecordType from parent Opportunity Type and Purchase_Price from Opportunity total equipment cost.</description>
-    <interviewLabel>Set Approval Defaults on Insert {!$Flow.CurrentDateTime}</interviewLabel>
-    <label>Set Approval Defaults on Insert</label>
-    <processMetadataValues>
-        <name>BuilderType</name>
-        <value>
-            <stringValue>LightningFlowBuilder</stringValue>
-        </value>
-    </processMetadataValues>
-    <processMetadataValues>
-        <name>CanvasMode</name>
-        <value>
-            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
-        </value>
-    </processMetadataValues>
-    <processType>AutoLaunchedFlow</processType>
-    <start>
-        <locationX>176</locationX>
-        <locationY>50</locationY>
-        <object>Approval__c</object>
-        <recordTriggerType>Create</recordTriggerType>
-        <triggerType>RecordBeforeSave</triggerType>
-        <connector>
-            <targetReference>Get_Opportunity</targetReference>
-        </connector>
-    </start>
-    <status>Active</status>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <assignments>
+        <name>Assign_Equipment_RT</name>
+        <label>Assign Equipment RT</label>
+        <locationX>44</locationX>
+        <locationY>758</locationY>
+        <assignmentItems>
+            <assignToReference>$Record.RecordTypeId</assignToReference>
+            <operator>Assign</operator>
+            <value>
+                <elementReference>varRecordTypeId</elementReference>
+            </value>
+        </assignmentItems>
+    </assignments>
     <assignments>
         <name>Assign_Purchase_Price</name>
         <label>Assign Purchase Price</label>
@@ -45,19 +32,6 @@
         </connector>
     </assignments>
     <assignments>
-        <name>Assign_Equipment_RT</name>
-        <label>Assign Equipment RT</label>
-        <locationX>44</locationX>
-        <locationY>758</locationY>
-        <assignmentItems>
-            <assignToReference>$Record.RecordTypeId</assignToReference>
-            <operator>Assign</operator>
-            <value>
-                <elementReference>varRecordTypeId</elementReference>
-            </value>
-        </assignmentItems>
-    </assignments>
-    <assignments>
         <name>Assign_WC_RT</name>
         <label>Assign Working Capital RT</label>
         <locationX>308</locationX>
@@ -70,28 +44,6 @@
             </value>
         </assignmentItems>
     </assignments>
-    <decisions>
-        <name>Has_Opportunity</name>
-        <label>Has Opportunity?</label>
-        <locationX>176</locationX>
-        <locationY>278</locationY>
-        <defaultConnectorLabel>No Opportunity</defaultConnectorLabel>
-        <rules>
-            <name>Yes_Has_Opportunity</name>
-            <conditionLogic>and</conditionLogic>
-            <conditions>
-                <leftValueReference>varOppType</leftValueReference>
-                <operator>IsNull</operator>
-                <rightValue>
-                    <booleanValue>false</booleanValue>
-                </rightValue>
-            </conditions>
-            <connector>
-                <targetReference>Assign_Purchase_Price</targetReference>
-            </connector>
-            <label>Yes</label>
-        </rules>
-    </decisions>
     <decisions>
         <name>Check_Opp_Type</name>
         <label>Opportunity Type</label>
@@ -129,6 +81,74 @@
             <label>Working Capital</label>
         </rules>
     </decisions>
+    <decisions>
+        <name>Has_Opportunity</name>
+        <label>Has Opportunity?</label>
+        <locationX>176</locationX>
+        <locationY>278</locationY>
+        <defaultConnectorLabel>No Opportunity</defaultConnectorLabel>
+        <rules>
+            <name>Yes_Has_Opportunity</name>
+            <conditionLogic>and</conditionLogic>
+            <conditions>
+                <leftValueReference>varOppType</leftValueReference>
+                <operator>IsNull</operator>
+                <rightValue>
+                    <booleanValue>false</booleanValue>
+                </rightValue>
+            </conditions>
+            <connector>
+                <targetReference>Assign_Purchase_Price</targetReference>
+            </connector>
+            <label>Yes</label>
+        </rules>
+    </decisions>
+    <description>On new Approval creation, defaults RecordType from parent Opportunity Type and Purchase_Price from Opportunity total equipment cost.</description>
+    <interviewLabel>Set Approval Defaults on Insert {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Set Approval Defaults on Insert</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>AutoLaunchedFlow</processType>
+    <recordLookups>
+        <name>Get_Equipment_RT</name>
+        <label>Get Equipment Record Type</label>
+        <locationX>44</locationX>
+        <locationY>638</locationY>
+        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
+        <connector>
+            <targetReference>Assign_Equipment_RT</targetReference>
+        </connector>
+        <filterLogic>and</filterLogic>
+        <filters>
+            <field>SobjectType</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Approval__c</stringValue>
+            </value>
+        </filters>
+        <filters>
+            <field>DeveloperName</field>
+            <operator>EqualTo</operator>
+            <value>
+                <stringValue>Equipment</stringValue>
+            </value>
+        </filters>
+        <object>RecordType</object>
+        <outputAssignments>
+            <assignToReference>varRecordTypeId</assignToReference>
+            <field>Id</field>
+        </outputAssignments>
+    </recordLookups>
     <recordLookups>
         <name>Get_Opportunity</name>
         <label>Get Opportunity</label>
@@ -146,46 +166,14 @@
                 <elementReference>$Record.Opportunity__c</elementReference>
             </value>
         </filters>
-        <getFirstRecordOnly>true</getFirstRecordOnly>
         <object>Opportunity</object>
-        <outputAssignments>
-            <assignToReference>varOppType</assignToReference>
-            <field>Type</field>
-        </outputAssignments>
         <outputAssignments>
             <assignToReference>varOppEquipmentCost</assignToReference>
             <field>Total_Equipment_Cost__c</field>
         </outputAssignments>
-    </recordLookups>
-    <recordLookups>
-        <name>Get_Equipment_RT</name>
-        <label>Get Equipment Record Type</label>
-        <locationX>44</locationX>
-        <locationY>638</locationY>
-        <assignNullValuesIfNoRecordsFound>false</assignNullValuesIfNoRecordsFound>
-        <connector>
-            <targetReference>Assign_Equipment_RT</targetReference>
-        </connector>
-        <filterLogic>and</filterLogic>
-        <filters>
-            <field>SObjectType</field>
-            <operator>EqualTo</operator>
-            <value>
-                <stringValue>Approval__c</stringValue>
-            </value>
-        </filters>
-        <filters>
-            <field>DeveloperName</field>
-            <operator>EqualTo</operator>
-            <value>
-                <stringValue>Equipment</stringValue>
-            </value>
-        </filters>
-        <getFirstRecordOnly>true</getFirstRecordOnly>
-        <object>RecordType</object>
         <outputAssignments>
-            <assignToReference>varRecordTypeId</assignToReference>
-            <field>Id</field>
+            <assignToReference>varOppType</assignToReference>
+            <field>Type</field>
         </outputAssignments>
     </recordLookups>
     <recordLookups>
@@ -199,7 +187,7 @@
         </connector>
         <filterLogic>and</filterLogic>
         <filters>
-            <field>SObjectType</field>
+            <field>SobjectType</field>
             <operator>EqualTo</operator>
             <value>
                 <stringValue>Approval__c</stringValue>
@@ -212,20 +200,23 @@
                 <stringValue>Working_Capital</stringValue>
             </value>
         </filters>
-        <getFirstRecordOnly>true</getFirstRecordOnly>
         <object>RecordType</object>
         <outputAssignments>
             <assignToReference>varRecordTypeId</assignToReference>
             <field>Id</field>
         </outputAssignments>
     </recordLookups>
-    <variables>
-        <name>varOppType</name>
-        <dataType>String</dataType>
-        <isCollection>false</isCollection>
-        <isInput>false</isInput>
-        <isOutput>false</isOutput>
-    </variables>
+    <start>
+        <locationX>176</locationX>
+        <locationY>50</locationY>
+        <connector>
+            <targetReference>Get_Opportunity</targetReference>
+        </connector>
+        <object>Approval__c</object>
+        <recordTriggerType>Create</recordTriggerType>
+        <triggerType>RecordBeforeSave</triggerType>
+    </start>
+    <status>Draft</status>
     <variables>
         <name>varOppEquipmentCost</name>
         <dataType>Currency</dataType>
@@ -233,6 +224,13 @@
         <isInput>false</isInput>
         <isOutput>false</isOutput>
         <scale>2</scale>
+    </variables>
+    <variables>
+        <name>varOppType</name>
+        <dataType>String</dataType>
+        <isCollection>false</isCollection>
+        <isInput>false</isInput>
+        <isOutput>false</isOutput>
     </variables>
     <variables>
         <name>varRecordTypeId</name>

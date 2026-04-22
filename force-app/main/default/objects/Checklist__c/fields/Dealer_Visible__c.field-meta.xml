@@ -4,6 +4,7 @@
     <defaultValue>false</defaultValue>
     <description>Controls whether this checklist item is visible to dealers in the dealer portal.</description>
     <label>Dealer Visible</label>
+    <trackFeedHistory>false</trackFeedHistory>
     <trackTrending>false</trackTrending>
     <type>Checkbox</type>
 </CustomField>

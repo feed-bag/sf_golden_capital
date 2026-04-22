@@ -108,8 +108,8 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.Odometer__c</fieldItem>
-                <identifier>RecordOdometer_cField</identifier>
+                <fieldItem>Record.Price__c</fieldItem>
+                <identifier>RecordPrice_cField2</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -118,12 +118,26 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.Hours__c</fieldItem>
-                <identifier>RecordHours_cField</identifier>
+                <fieldItem>Record.Tax__c</fieldItem>
+                <identifier>RecordTax_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
             <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.RPO_Payments__c</fieldItem>
+                <identifier>RecordRPO_Payments_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
                 <fieldItem>Record.Total_Cost__c</fieldItem>
                 <identifier>RecordTotal_Cost__cField</identifier>
             </fieldInstance>
@@ -140,6 +154,26 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.Serial_Number__c</fieldItem>
                 <identifier>RecordSerial_Number_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.Odometer__c</fieldItem>
+                <identifier>RecordOdometer_cField</identifier>
+            </fieldInstance>
+        </itemInstances>
+        <itemInstances>
+            <fieldInstance>
+                <fieldInstanceProperties>
+                    <name>uiBehavior</name>
+                    <value>none</value>
+                </fieldInstanceProperties>
+                <fieldItem>Record.Hours__c</fieldItem>
+                <identifier>RecordHours_cField</identifier>
             </fieldInstance>
         </itemInstances>
         <itemInstances>
@@ -168,7 +202,7 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.Account__c</fieldItem>
+                <fieldItem>Record.Dealer__c</fieldItem>
                 <identifier>RecordAccount_cField</identifier>
             </fieldInstance>
         </itemInstances>
@@ -180,16 +214,6 @@
                 </fieldInstanceProperties>
                 <fieldItem>Record.Contact__c</fieldItem>
                 <identifier>RecordContact_cField</identifier>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.OwnerId</fieldItem>
-                <identifier>RecordOwnerIdField</identifier>
             </fieldInstance>
         </itemInstances>
         <name>Facet-8478bc87-5725-4764-b823-542f0a744d4a</name>

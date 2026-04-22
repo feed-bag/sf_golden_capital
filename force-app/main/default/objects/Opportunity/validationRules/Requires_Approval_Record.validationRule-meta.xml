@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Requires_Approval_Record</fullName>
+    <active>true</active>
+    <description>An Approval record must be linked to the Opportunity before moving past Submitted stage.</description>
+    <errorConditionFormula>AND(
+  OR(
+    ISPICKVAL(StageName, &quot;Approved&quot;),
+    ISPICKVAL(StageName, &quot;Pre Docs&quot;),
+    ISPICKVAL(StageName, &quot;Docs Requested&quot;),
+    ISPICKVAL(StageName, &quot;Docs Out&quot;),
+    ISPICKVAL(StageName, &quot;Funding Request Sent&quot;),
+    ISPICKVAL(StageName, &quot;Funded&quot;),
+    ISPICKVAL(StageName, &quot;FPC&quot;),
+    ISPICKVAL(StageName, &quot;Fully Funded&quot;)
+  ),
+  Approval_Count__c = 0
+)</errorConditionFormula>
+    <errorDisplayField>StageName</errorDisplayField>
+    <errorMessage>An Approval record must be linked to this Opportunity before advancing past Submitted.</errorMessage>
+</ValidationRule>

@@ -34,24 +34,6 @@
                 <default>false</default>
                 <label>Docs Requested</label>
             </value>
-            <value>
-                <fullName>Approved/Terms Review</fullName>
-                <default>false</default>
-                <isActive>false</isActive>
-                <label>Approved/Terms Review</label>
-            </value>
-            <value>
-                <fullName>Ready for Docs</fullName>
-                <default>false</default>
-                <isActive>false</isActive>
-                <label>Ready for Docs</label>
-            </value>
-            <value>
-                <fullName>Docs</fullName>
-                <default>false</default>
-                <isActive>false</isActive>
-                <label>Docs</label>
-            </value>
         </valueSetDefinition>
     </valueSet>
 </CustomField>

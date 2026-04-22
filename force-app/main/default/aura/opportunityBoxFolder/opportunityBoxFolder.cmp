@@ -1,0 +1,21 @@
+<aura:component controller="OpportunityDashboardController"
+    implements="force:hasRecordId,flexipage:availableForRecordHome" access="global">
+    <aura:attribute name="recordId" type="Id" />
+    <aura:attribute name="folderId" type="String" />
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}" />
+
+    <aura:if isTrue="{!not(empty(v.folderId))}">
+        <box:UIElementContentExplorer
+            folderId="{!v.folderId}"
+            height="600"
+            canUpload="true"
+            canPreview="true"
+            canDownload="true"
+            canDelete="true"
+            canRename="true" />
+        <aura:set attribute="else">
+            <p style="color:#888;padding:1rem;">No Box folder linked to this opportunity.</p>
+        </aura:set>
+    </aura:if>
+</aura:component>

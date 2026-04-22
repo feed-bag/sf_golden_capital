@@ -42,9 +42,15 @@ public with sharing class OpportunityDashboardController {
     // ── Public Apex methods ───────────────────────────────────────────────────
 
     @AuraEnabled(cacheable=true)
+    public static String getBoxFolderId(Id recordId) {
+        Opportunity opp = [SELECT Box_Folder_ID__c FROM Opportunity WHERE Id = :recordId LIMIT 1];
+        return opp.Box_Folder_ID__c;
+    }
+
+    @AuraEnabled(cacheable=true)
     public static List<Opportunity> getOpenOpportunities() {
         return [
-            SELECT Id, Name, StageName, Amount, Type,
+            SELECT Id, Name, StageName, Amount, Type, OwnerId,
                    Account.Name, Owner.Name,
                    Dealer__r.Name, Unique_ID__c, LastStageChangeInDays
             FROM Opportunity

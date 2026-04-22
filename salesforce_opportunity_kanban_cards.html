@@ -1,0 +1,229 @@
+<h2 class="sr-only">Five variations of a Salesforce opportunity kanban card showing title, tags, deal amount, assignee avatar, progress and days since updated.</h2>
+
+<style>
+  .kb-canvas {
+    background: var(--color-background-secondary);
+    border-radius: var(--border-radius-lg);
+    padding: 1.5rem;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 16px;
+  }
+  .kb-card {
+    background: var(--color-background-primary);
+    border: 0.5px solid var(--color-border-tertiary);
+    border-radius: var(--border-radius-lg);
+    padding: 14px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 0;
+  }
+  .kb-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    margin: 0;
+    line-height: 1.35;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+  }
+  .kb-tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .kb-tag {
+    font-size: 11px;
+    padding: 2px 8px;
+    border-radius: 999px;
+    font-weight: 500;
+    line-height: 1.5;
+  }
+  .kb-amount {
+    font-size: 18px;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    font-variant-numeric: tabular-nums;
+    margin: 2px 0 0;
+  }
+  .kb-progress-wrap { display: flex; flex-direction: column; gap: 4px; }
+  .kb-progress-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--color-text-secondary);
+  }
+  .kb-progress-track {
+    height: 4px;
+    background: var(--color-background-secondary);
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .kb-progress-fill { height: 100%; border-radius: 999px; }
+  .kb-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 2px;
+    padding-top: 10px;
+    border-top: 0.5px solid var(--color-border-tertiary);
+  }
+  .kb-avatar {
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 500;
+  }
+  .kb-days {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    color: var(--color-text-secondary);
+    font-variant-numeric: tabular-nums;
+  }
+  .kb-dot { width: 6px; height: 6px; border-radius: 50%; }
+  .kb-stage-strip {
+    height: 3px;
+    border-radius: 999px;
+    margin: -2px -2px 2px;
+  }
+</style>
+
+<div class="kb-canvas">
+
+  <!-- Card 1 — Qualification stage -->
+  <div class="kb-card">
+    <div class="kb-stage-strip" style="background: #85B7EB;"></div>
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+      <p class="kb-title">Acme Corp — Enterprise license renewal</p>
+      <span style="font-size:10px; color: var(--color-text-tertiary); font-variant-numeric: tabular-nums;">#00142</span>
+    </div>
+    <div class="kb-tags">
+      <span class="kb-tag" style="background:#E6F1FB; color:#0C447C;">Qualification</span>
+      <span class="kb-tag" style="background:#F1EFE8; color:#444441;">Renewal</span>
+      <span class="kb-tag" style="background:#F1EFE8; color:#444441;">Enterprise</span>
+    </div>
+    <p class="kb-amount">$124,500</p>
+    <div class="kb-progress-wrap">
+      <div class="kb-progress-label"><span>Stage progress</span><span>20%</span></div>
+      <div class="kb-progress-track"><div class="kb-progress-fill" style="width:20%; background:#378ADD;"></div></div>
+    </div>
+    <div class="kb-footer">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <div class="kb-avatar" style="background:#EEEDFE; color:#3C3489;">SK</div>
+        <span style="font-size:12px; color: var(--color-text-secondary);">Sarah Kim</span>
+      </div>
+      <div class="kb-days"><span class="kb-dot" style="background:#639922;"></span>2d ago</div>
+    </div>
+  </div>
+
+  <!-- Card 2 — Needs Analysis -->
+  <div class="kb-card">
+    <div class="kb-stage-strip" style="background:#AFA9EC;"></div>
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+      <p class="kb-title">Northwind Trading — Platform expansion</p>
+      <span style="font-size:10px; color: var(--color-text-tertiary); font-variant-numeric: tabular-nums;">#00156</span>
+    </div>
+    <div class="kb-tags">
+      <span class="kb-tag" style="background:#EEEDFE; color:#3C3489;">Needs analysis</span>
+      <span class="kb-tag" style="background:#F1EFE8; color:#444441;">Upsell</span>
+      <span class="kb-tag" style="background:#FAEEDA; color:#633806;">Mid-market</span>
+    </div>
+    <p class="kb-amount">$48,200</p>
+    <div class="kb-progress-wrap">
+      <div class="kb-progress-label"><span>Stage progress</span><span>40%</span></div>
+      <div class="kb-progress-track"><div class="kb-progress-fill" style="width:40%; background:#7F77DD;"></div></div>
+    </div>
+    <div class="kb-footer">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <div class="kb-avatar" style="background:#E1F5EE; color:#085041;">MR</div>
+        <span style="font-size:12px; color: var(--color-text-secondary);">Marcus Reed</span>
+      </div>
+      <div class="kb-days"><span class="kb-dot" style="background:#639922;"></span>5d ago</div>
+    </div>
+  </div>
+
+  <!-- Card 3 — Proposal stage -->
+  <div class="kb-card">
+    <div class="kb-stage-strip" style="background:#F0997B;"></div>
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+      <p class="kb-title">Globex Industries — Integration services Q2</p>
+      <span style="font-size:10px; color: var(--color-text-tertiary); font-variant-numeric: tabular-nums;">#00138</span>
+    </div>
+    <div class="kb-tags">
+      <span class="kb-tag" style="background:#FAECE7; color:#712B13;">Proposal</span>
+      <span class="kb-tag" style="background:#FBEAF0; color:#72243E;">Hot</span>
+      <span class="kb-tag" style="background:#F1EFE8; color:#444441;">Services</span>
+    </div>
+    <p class="kb-amount">$287,000</p>
+    <div class="kb-progress-wrap">
+      <div class="kb-progress-label"><span>Stage progress</span><span>60%</span></div>
+      <div class="kb-progress-track"><div class="kb-progress-fill" style="width:60%; background:#D85A30;"></div></div>
+    </div>
+    <div class="kb-footer">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <div class="kb-avatar" style="background:#FAEEDA; color:#633806;">JT</div>
+        <span style="font-size:12px; color: var(--color-text-secondary);">Jin Tanaka</span>
+      </div>
+      <div class="kb-days"><span class="kb-dot" style="background:#EF9F27;"></span>9d ago</div>
+    </div>
+  </div>
+
+  <!-- Card 4 — Negotiation (stale warning) -->
+  <div class="kb-card">
+    <div class="kb-stage-strip" style="background:#FAC775;"></div>
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+      <p class="kb-title">Stark Holdings — Multi-year enterprise agreement</p>
+      <span style="font-size:10px; color: var(--color-text-tertiary); font-variant-numeric: tabular-nums;">#00119</span>
+    </div>
+    <div class="kb-tags">
+      <span class="kb-tag" style="background:#FAEEDA; color:#633806;">Negotiation</span>
+      <span class="kb-tag" style="background:#FCEBEB; color:#791F1F;">At risk</span>
+      <span class="kb-tag" style="background:#F1EFE8; color:#444441;">Strategic</span>
+    </div>
+    <p class="kb-amount">$1,250,000</p>
+    <div class="kb-progress-wrap">
+      <div class="kb-progress-label"><span>Stage progress</span><span>80%</span></div>
+      <div class="kb-progress-track"><div class="kb-progress-fill" style="width:80%; background:#BA7517;"></div></div>
+    </div>
+    <div class="kb-footer">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <div class="kb-avatar" style="background:#FCEBEB; color:#791F1F;">AV</div>
+        <span style="font-size:12px; color: var(--color-text-secondary);">Ana Vasquez</span>
+      </div>
+      <div class="kb-days"><span class="kb-dot" style="background:#E24B4A;"></span>21d ago</div>
+    </div>
+  </div>
+
+  <!-- Card 5 — Closed Won -->
+  <div class="kb-card">
+    <div class="kb-stage-strip" style="background:#97C459;"></div>
+    <div style="display:flex; justify-content:space-between; align-items:flex-start; gap:8px;">
+      <p class="kb-title">Wayne Robotics — Annual subscription</p>
+      <span style="font-size:10px; color: var(--color-text-tertiary); font-variant-numeric: tabular-nums;">#00127</span>
+    </div>
+    <div class="kb-tags">
+      <span class="kb-tag" style="background:#EAF3DE; color:#27500A;">Closed won</span>
+      <span class="kb-tag" style="background:#F1EFE8; color:#444441;">New logo</span>
+      <span class="kb-tag" style="background:#E1F5EE; color:#085041;">SMB</span>
+    </div>
+    <p class="kb-amount">$62,400</p>
+    <div class="kb-progress-wrap">
+      <div class="kb-progress-label"><span>Stage progress</span><span>100%</span></div>
+      <div class="kb-progress-track"><div class="kb-progress-fill" style="width:100%; background:#639922;"></div></div>
+    </div>
+    <div class="kb-footer">
+      <div style="display:flex; align-items:center; gap:8px;">
+        <div class="kb-avatar" style="background:#EAF3DE; color:#27500A;">DO</div>
+        <span style="font-size:12px; color: var(--color-text-secondary);">Diego Ortiz</span>
+      </div>
+      <div class="kb-days"><span class="kb-dot" style="background:#888780;"></span>1d ago</div>
+    </div>
+  </div>
+
+</div>

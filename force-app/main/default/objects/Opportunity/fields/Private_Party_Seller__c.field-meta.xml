@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Private_Party_Seller__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <label>Private Party Seller</label>
+    <referenceTo>Contact</referenceTo>
+    <relationshipLabel>Opportunities (Private Party Seller)</relationshipLabel>
+    <relationshipName>OppPrivatePartySeller</relationshipName>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <type>Lookup</type>
+</CustomField>

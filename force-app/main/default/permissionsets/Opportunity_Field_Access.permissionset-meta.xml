@@ -1,5 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <classAccesses>
+        <apexClass>OpportunityChecklistController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
+    <classAccesses>
+        <apexClass>OpportunityDashboardController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
     <description>Grants read/edit access to all custom Opportunity fields for all users.</description>
     <fieldPermissions>
         <editable>false</editable>
@@ -11,15 +19,14 @@
         <field>Opportunity.Budget_Confirmed__c</field>
         <readable>true</readable>
     </fieldPermissions>
-
     <fieldPermissions>
         <editable>true</editable>
-        <field>Opportunity.Dealer__c</field>
+        <field>Opportunity.Dealer_Representative__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Opportunity.Dealer_Representative__c</field>
+        <field>Opportunity.Dealer__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -28,13 +35,13 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>true</editable>
-        <field>Opportunity.Equipment__c</field>
+        <editable>false</editable>
+        <field>Opportunity.Equipment_Count__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
-        <field>Opportunity.Equipment_Count__c</field>
+        <editable>true</editable>
+        <field>Opportunity.Equipment__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -84,12 +91,12 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Opportunity.Private_Party__c</field>
+        <field>Opportunity.Private_Party_Seller__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
-        <field>Opportunity.Private_Party_Seller__c</field>
+        <field>Opportunity.Private_Party__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
@@ -98,13 +105,13 @@
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>true</editable>
-        <field>Opportunity.split_representative__c</field>
+        <editable>false</editable>
+        <field>Opportunity.Unique_ID__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>
-        <editable>false</editable>
-        <field>Opportunity.Unique_ID__c</field>
+        <editable>true</editable>
+        <field>Opportunity.split_representative__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <hasActivationRequired>false</hasActivationRequired>

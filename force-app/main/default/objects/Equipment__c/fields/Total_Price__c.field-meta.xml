@@ -4,7 +4,8 @@
     <formula>BLANKVALUE(Price__c, 0) + BLANKVALUE(Tax__c, 0) - BLANKVALUE(RPO_Payments__c, 0)</formula>
     <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
     <label>Total Price</label>
-    <precision>16</precision>
+    <precision>18</precision>
+    <required>false</required>
     <scale>2</scale>
     <trackTrending>false</trackTrending>
     <type>Currency</type>

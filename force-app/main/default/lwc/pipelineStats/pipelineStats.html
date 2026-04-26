@@ -1,28 +1,141 @@
 <template>
-    <lightning-card>
-        <div class="banner-header">
-            <img src={bannerUrl} alt="Golden Capital" class="banner-img" />
-        </div>
-        <div class="stats-container">
-            <template if:true={stats}>
-                <div class="stat-tile">
-                    <div class="stat-value">{stats.activeDeals}</div>
-                    <div class="stat-label">Active Deals</div>
+    <article class="ps-shell">
+        <header class="ps-banner">
+            <img src={bannerUrl} alt="Golden Capital" class="ps-banner-img" />
+        </header>
+
+        <section class="ps-toolbar">
+            <div class="ps-filter">
+                <span class="ps-filter-label">Range</span>
+                <div class="ps-range" role="group">
+                    <template for:each={rangeButtons} for:item="opt">
+                        <button key={opt.value}
+                                class={opt.cls}
+                                data-value={opt.value}
+                                onclick={handleRangeClick}
+                                type="button">
+                            {opt.label}
+                        </button>
+                    </template>
                 </div>
-                <div class="stat-divider"></div>
-                <div class="stat-tile">
-                    <div class="stat-value">{stats.dealsThisMonth}</div>
-                    <div class="stat-label">Deals Created This Month</div>
-                </div>
-                <div class="stat-divider"></div>
-                <div class="stat-tile">
-                    <div class="stat-value">{volumeFundedFormatted}</div>
-                    <div class="stat-label">Net Volume Funded This Month</div>
-                </div>
-            </template>
-            <template if:true={error}>
-                <p class="error-msg">Error loading stats.</p>
-            </template>
-        </div>
-    </lightning-card>
+            </div>
+            <div class="ps-filter">
+                <label class="ps-filter-label" for="ps-owner">Owner</label>
+                <select id="ps-owner" class="ps-select" onchange={handleOwnerChange}>
+                    <template for:each={userOptions} for:item="opt">
+                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                    </template>
+                </select>
+            </div>
+            <button class="ps-refresh" type="button" onclick={handleRefresh} title="Refresh">↻</button>
+        </section>
+
+        <template if:true={error}>
+            <p class="ps-error">Error loading metrics.</p>
+        </template>
+
+        <template if:true={hasMetrics}>
+            <section class="ps-kpi-row">
+                <template for:each={kpiTiles} for:item="tile">
+                    <div key={tile.key} class="ps-kpi">
+                        <div class="ps-kpi-label">{tile.label}</div>
+                        <div class="ps-kpi-value">{tile.value}</div>
+                        <template if:true={tile.hasDelta}>
+                            <div class={tile.cls}>
+                                <span>{tile.text}</span>
+                                <span class="ps-delta-suffix"> vs prev period</span>
+                            </div>
+                        </template>
+                    </div>
+                </template>
+            </section>
+
+            <section class="ps-charts">
+                <article class="ps-chart-card">
+                    <header class="ps-chart-header">
+                        <h3>Volume Funded</h3>
+                        <span class="ps-chart-sub">Last 12 months</span>
+                    </header>
+                    <svg viewBox="0 0 720 180" class="ps-chart-svg" preserveAspectRatio="none">
+                        <template for:each={volumeFundedBars} for:item="b">
+                            <g key={b.key}>
+                                <rect x={b.x} y={b.y} width={b.w} height={b.h} class="ps-bar ps-bar--volume" rx="2"></rect>
+                                <text x={b.labelX} y={b.labelY} class="ps-bar-label" text-anchor="middle">{b.label}</text>
+                                <text x={b.labelX} y={b.valueY} class="ps-bar-value" text-anchor="middle">{b.valueText}</text>
+                            </g>
+                        </template>
+                    </svg>
+                </article>
+
+                <article class="ps-chart-card">
+                    <header class="ps-chart-header">
+                        <h3>Opportunities Created</h3>
+                        <span class="ps-chart-sub">Last 12 months · % shows month-over-month change</span>
+                    </header>
+                    <svg viewBox="0 0 720 180" class="ps-chart-svg" preserveAspectRatio="none">
+                        <template for:each={oppCreatedBars} for:item="b">
+                            <g key={b.key}>
+                                <rect x={b.x} y={b.y} width={b.w} height={b.h} class="ps-bar ps-bar--created" rx="2"></rect>
+                                <text x={b.labelX} y={b.labelY} class="ps-bar-label" text-anchor="middle">{b.label}</text>
+                                <text x={b.labelX} y={b.valueY} class="ps-bar-value" text-anchor="middle">{b.valueText}</text>
+                                <text x={b.labelX} y={b.trendY} class={b.trendCls} text-anchor="middle">{b.trendText}</text>
+                            </g>
+                        </template>
+                    </svg>
+                </article>
+            </section>
+
+            <section class="ps-bottom">
+                <article class="ps-chart-card ps-bottom-stage">
+                    <header class="ps-chart-header">
+                        <h3>Pipeline by Stage</h3>
+                        <span class="ps-chart-sub">Open opportunities</span>
+                    </header>
+                    <div class="ps-stage-list">
+                        <template for:each={stageBars} for:item="row">
+                            <div key={row.key} class="ps-stage-row">
+                                <div class="ps-stage-label">
+                                    <span class="ps-stage-name">{row.stage}</span>
+                                    <span class="ps-stage-count">{row.count}</span>
+                                </div>
+                                <div class="ps-stage-track">
+                                    <div class="ps-stage-fill" style={row.barStyle}></div>
+                                </div>
+                                <div class="ps-stage-value">{row.valueText}</div>
+                            </div>
+                        </template>
+                    </div>
+                </article>
+
+                <template if:true={hasTopOwners}>
+                    <article class="ps-chart-card ps-bottom-owners">
+                        <header class="ps-chart-header">
+                            <h3>Top Owners</h3>
+                            <span class="ps-chart-sub">By funded volume · {periodLabel}</span>
+                        </header>
+                        <table class="ps-owner-table">
+                            <thead>
+                                <tr>
+                                    <th class="ps-rank">#</th>
+                                    <th>Owner</th>
+                                    <th class="ps-num">Deals</th>
+                                    <th class="ps-num">Volume</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <template for:each={topOwnerRows} for:item="row">
+                                    <tr key={row.key}>
+                                        <td class="ps-rank">{row.rank}</td>
+                                        <td>{row.ownerName}</td>
+                                        <td class="ps-num">{row.dealsText}</td>
+                                        <td class="ps-num">{row.volumeText}</td>
+                                    </tr>
+                                </template>
+                            </tbody>
+                        </table>
+                    </article>
+                </template>
+            </section>
+        </template>
+    </article>
 </template>

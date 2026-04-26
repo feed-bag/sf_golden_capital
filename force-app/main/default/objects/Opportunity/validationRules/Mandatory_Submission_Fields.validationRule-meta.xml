@@ -2,9 +2,18 @@
 <ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Mandatory_Submission_Fields</fullName>
     <active>true</active>
-    <description>When Type is Equipment, Equipment Description must be filled in and at least one Equipment record must be linked to move to Submitted.</description>
+    <description>When Type is Equipment, Equipment Description must be filled in and at least one Equipment record must be linked to move past Internal Review (Submitted and beyond).</description>
     <errorConditionFormula>AND(
-  ISPICKVAL(StageName, &quot;Submitted&quot;),
+  CASE(StageName,
+    &quot;Submitted&quot;, 1,
+    &quot;Approved&quot;, 1,
+    &quot;Pre Docs&quot;, 1,
+    &quot;Docs Requested&quot;, 1,
+    &quot;Docs Out&quot;, 1,
+    &quot;Funding Request Sent&quot;, 1,
+    &quot;Funded&quot;, 1,
+    &quot;FPC&quot;, 1,
+    0) = 1,
   ISPICKVAL(Type, &quot;Equipment&quot;),
   OR(
     ISBLANK(Equipment__c),

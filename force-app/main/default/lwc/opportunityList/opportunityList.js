@@ -35,14 +35,13 @@ function formatFieldValue(raw, type) {
 }
 
 // ── Core columns (always available, have special display logic) ───────────────
-// Virtual apiNames (accountName / dealerName / ownerName) resolve relationship fields.
+// Virtual apiNames (accountName / ownerName) resolve relationship fields.
 const CORE_COLUMNS = [
     { apiName: 'Unique_ID__c',          label: 'ID',           type: 'TEXT',     defaultOn: true  },
     { apiName: 'accountName',           label: 'Account',      type: 'TEXT',     defaultOn: true  },
     { apiName: 'StageName',             label: 'Stage',        type: 'PICKLIST', defaultOn: true  },
     { apiName: 'Amount',                label: 'Amount',       type: 'CURRENCY', defaultOn: true  },
     { apiName: 'Type',                  label: 'Type',         type: 'PICKLIST', defaultOn: true  },
-    { apiName: 'dealerName',            label: 'Dealer',       type: 'TEXT',     defaultOn: true  },
     { apiName: 'ownerName',             label: 'Owner',        type: 'TEXT',     defaultOn: true  },
     { apiName: 'LastStageChangeInDays', label: 'Days',         type: 'INTEGER',  defaultOn: true  },
     { apiName: 'CloseDate',             label: 'Close Date',   type: 'DATE',     defaultOn: false },
@@ -118,7 +117,6 @@ function mapOpp(opp) {
         Amount:                opp.Amount       || 0,
         amountFormatted:       opp.Amount ? CURRENCY.format(opp.Amount) : '—',
         Type:                  opp.Type         || '—',
-        dealerName:            opp.Dealer__r    ? opp.Dealer__r.Name : '—',
         ownerName:             opp.Owner        ? opp.Owner.Name     : '—',
         LastStageChangeInDays: days,
         daysLabel:             days === 0 ? 'Today' : `${days}d`,
@@ -137,7 +135,6 @@ function mapOpp(opp) {
 function sortValue(row, apiName) {
     switch (apiName) {
         case 'accountName':
-        case 'dealerName':
         case 'ownerName':
         case 'Unique_ID__c':
         case 'StageName':
@@ -182,7 +179,7 @@ function makeCell(row, col) {
                  isDot: false, dotStyle: null, isBadge: false, badgeStyle: null };
     }
     if (CORE_API_SET.has(api)) {
-        // Other core columns (accountName, dealerName, ownerName, Unique_ID__c)
+        // Other core columns (accountName, ownerName, Unique_ID__c)
         return { field: api, value: row[api] ?? '—', tdClass: 'ol-td',
                  isDot: false, dotStyle: null, isBadge: false, badgeStyle: null };
     }
@@ -305,7 +302,7 @@ export default class OpportunityList extends NavigationMixin(LightningElement) {
 
         if (term) {
             result = result.filter(o =>
-                [o.accountName, o.Unique_ID__c, o.StageName, o.ownerName, o.dealerName, o.Type]
+                [o.accountName, o.Unique_ID__c, o.StageName, o.ownerName, o.Type]
                     .some(v => v && v.toLowerCase().includes(term))
             );
         }

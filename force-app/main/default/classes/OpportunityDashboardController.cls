@@ -5,8 +5,8 @@ public with sharing class OpportunityDashboardController {
         // Already exposed as core columns
         'id','name','stagename','amount','type','closedate','createddate',
         'unique_id__c','laststagechangeindays',
-        // Relationship IDs handled by virtual columns (Account, Owner, Dealer)
-        'accountid','ownerid','dealer__c',
+        // Relationship IDs handled by virtual columns (Account, Owner)
+        'accountid','ownerid',
         // System / audit / internal — not useful to display
         'isdeleted','createdbyid','lastmodifiedbyid','lastmodifieddate',
         'systemmodstamp','lastactivitydate','lastvieweddate','lastreferenceddate',
@@ -52,11 +52,42 @@ public with sharing class OpportunityDashboardController {
         return [
             SELECT Id, Name, StageName, Amount, Type, OwnerId,
                    Account.Name, Owner.Name,
-                   Dealer__r.Name, Unique_ID__c, LastStageChangeInDays
+                   Unique_ID__c, LastStageChangeInDays,
+                   Private_Party__c, On_Hold__c,
+                   (SELECT Id, Dealer__c, Dealer__r.Name FROM Equipment__r)
             FROM Opportunity
             WHERE IsClosed = false
             ORDER BY StageName, Name
         ];
+    }
+
+    @AuraEnabled(cacheable=true)
+    public static List<Map<String, Object>> getDealersForOpportunity(Id oppId) {
+        Map<Id, String> distinctDealers = new Map<Id, String>();
+        for (Equipment__c e : [
+            SELECT Dealer__c, Dealer__r.Name
+            FROM Equipment__c
+            WHERE Opportunity__c = :oppId AND Dealer__c != null
+        ]) {
+            distinctDealers.put(e.Dealer__c, e.Dealer__r.Name);
+        }
+        List<Map<String, Object>> result = new List<Map<String, Object>>();
+        for (Id dealerId : distinctDealers.keySet()) {
+            result.add(new Map<String, Object>{
+                'id'   => dealerId,
+                'name' => distinctDealers.get(dealerId)
+            });
+        }
+        result.sort(new DealerNameComparator());
+        return result;
+    }
+
+    private class DealerNameComparator implements System.Comparator<Map<String, Object>> {
+        public Integer compare(Map<String, Object> a, Map<String, Object> b) {
+            String an = String.valueOf(a.get('name'));
+            String bn = String.valueOf(b.get('name'));
+            return an.compareTo(bn);
+        }
     }
 
     @AuraEnabled(cacheable=true)
@@ -95,7 +126,7 @@ public with sharing class OpportunityDashboardController {
         List<String> queryFields = new List<String>{
             'Id', 'Name', 'StageName', 'Amount', 'Type', 'CloseDate', 'CreatedDate',
             'Account.Name', 'Owner.Name',
-            'Dealer__r.Name', 'Unique_ID__c', 'LastStageChangeInDays'
+            'Unique_ID__c', 'LastStageChangeInDays'
         };
         for (Schema.DescribeFieldResult dfr : getDynamicFields()) {
             queryFields.add(dfr.getName());

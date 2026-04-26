@@ -125,4 +125,44 @@ private class OpportunityDashboardControllerTest {
 
         System.assertEquals(null, result, 'Should return null when no preference is saved');
     }
+
+    @isTest
+    static void testGetDealersForOpportunity() {
+        Account acct = [SELECT Id FROM Account WHERE Name = 'Test Account' LIMIT 1];
+        List<Account> dealers = new List<Account>{
+            new Account(Name = 'Dealer Alpha'),
+            new Account(Name = 'Dealer Bravo')
+        };
+        insert dealers;
+
+        Opportunity opp = new Opportunity(
+            Name = 'Dealer Test', AccountId = acct.Id,
+            StageName = 'Prospecting', CloseDate = Date.today().addDays(30)
+        );
+        insert opp;
+
+        insert new List<Equipment__c>{
+            new Equipment__c(Opportunity__c = opp.Id, Dealer__c = dealers[0].Id),
+            new Equipment__c(Opportunity__c = opp.Id, Dealer__c = dealers[1].Id),
+            new Equipment__c(Opportunity__c = opp.Id, Dealer__c = dealers[0].Id)
+        };
+
+        List<Map<String, Object>> result = OpportunityDashboardController.getDealersForOpportunity(opp.Id);
+        System.assertEquals(2, result.size(), 'Two distinct dealers expected from three equipment rows');
+        System.assertEquals('Dealer Alpha', String.valueOf(result[0].get('name')), 'Sorted by name asc');
+        System.assertEquals('Dealer Bravo', String.valueOf(result[1].get('name')));
+    }
+
+    @isTest
+    static void testGetDealersForOpportunityNoEquipment() {
+        Account acct = [SELECT Id FROM Account WHERE Name = 'Test Account' LIMIT 1];
+        Opportunity opp = new Opportunity(
+            Name = 'No Equip', AccountId = acct.Id,
+            StageName = 'Prospecting', CloseDate = Date.today().addDays(30)
+        );
+        insert opp;
+
+        List<Map<String, Object>> result = OpportunityDashboardController.getDealersForOpportunity(opp.Id);
+        System.assertEquals(0, result.size(), 'Empty list expected when no equipment exists');
+    }
 }

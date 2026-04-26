@@ -30,14 +30,14 @@ const TYPE_TAG_FALLBACK = [
     { bg: 'rgba(42,61,94,0.16)',    color: '#253551' },
     { bg: 'rgba(122,160,208,0.16)', color: '#1e3560' },
 ];
-const DEALER_TAG_STYLE = 'background:rgba(37,53,81,0.10); color:#253551; border:1px solid rgba(37,53,81,0.18);';
+const DEALER_TAG_STYLE   = 'background:rgba(37,53,81,0.10); color:#253551; border:1px solid rgba(37,53,81,0.18);';
+const OVERFLOW_TAG_STYLE = 'background:rgba(37,53,81,0.06); color:#5a6b85; border:1px solid rgba(37,53,81,0.14);';
+const DEALER_CAP = 2;
 
-const STAGE_PROGRESS = {
-    'App In': 8, 'Sales Follow Up': 17, 'On Hold': 25,
-    'Internal Review': 33, 'Submitted': 42, 'Approved': 50,
-    'Pre Docs': 58, 'Docs Requested': 67, 'Docs Out': 75,
-    'Funding Request Sent': 83, 'Funded': 92, 'FPC': 100
-};
+const BADGE_DEFS = [
+    { key: 'privateParty', field: 'Private_Party__c', label: 'Private Party', className: 'kb-badge kb-badge--private' },
+    { key: 'onHold',       field: 'On_Hold__c',       label: 'On Hold',       className: 'kb-badge kb-badge--hold' }
+];
 
 function stalenessColor(days) {
     if (days <= 1)  return '#97C459';
@@ -81,6 +81,7 @@ export default class OpportunityKanban extends LightningElement {
     @track isLoading = true;
     @track error;
     @track filterOwnerId;
+    @track showOnHold = true;
 
     _allOpps = [];
     _currentUserId = userId;
@@ -137,10 +138,27 @@ export default class OpportunityKanban extends LightningElement {
         this._applyFilter();
     }
 
+    handleOnHoldToggle() {
+        this.showOnHold = !this.showOnHold;
+        this._applyFilter();
+    }
+
+    get onHoldButtonClass() {
+        return this.showOnHold ? 'kb-filter-btn kb-filter-btn--active' : 'kb-filter-btn';
+    }
+
+    get onHoldAriaPressed() {
+        return this.showOnHold ? 'true' : 'false';
+    }
+
     _applyFilter() {
-        const filtered = this.filterOwnerId
-            ? this._allOpps.filter(opp => opp.OwnerId === this.filterOwnerId)
-            : this._allOpps;
+        let filtered = this._allOpps;
+        if (this.filterOwnerId) {
+            filtered = filtered.filter(opp => opp.OwnerId === this.filterOwnerId);
+        }
+        if (!this.showOnHold) {
+            filtered = filtered.filter(opp => opp.On_Hold__c !== true);
+        }
         this.buildColumns(filtered);
     }
 
@@ -153,7 +171,6 @@ export default class OpportunityKanban extends LightningElement {
 
             const daysInStage = opp.LastStageChangeInDays || 0;
             const staleColor = stalenessColor(daysInStage);
-            const progress = STAGE_PROGRESS[opp.StageName] || 0;
             const ownerName = opp.Owner ? opp.Owner.Name : '';
             const palette = AVATAR_PALETTES[hashIndex(ownerName, AVATAR_PALETTES.length)];
 
@@ -162,7 +179,28 @@ export default class OpportunityKanban extends LightningElement {
                 const tc = TYPE_TAG_COLORS[opp.Type] || TYPE_TAG_FALLBACK[hashIndex(opp.Type, TYPE_TAG_FALLBACK.length)];
                 tags.push({ key: 'type', label: opp.Type, tagStyle: `background:${tc.bg}; color:${tc.color};` });
             }
-            if (opp.Dealer__r) tags.push({ key: 'dealer', label: opp.Dealer__r.Name, tagStyle: DEALER_TAG_STYLE });
+
+            const dealerSeen = new Map();
+            (opp.Equipment__r || []).forEach(eq => {
+                if (eq.Dealer__c && !dealerSeen.has(eq.Dealer__c)) {
+                    dealerSeen.set(eq.Dealer__c, eq.Dealer__r ? eq.Dealer__r.Name : '');
+                }
+            });
+            const dealerEntries = [...dealerSeen.entries()];
+            dealerEntries.slice(0, DEALER_CAP).forEach(([id, name]) => {
+                tags.push({ key: 'dealer-' + id, label: name, tagStyle: DEALER_TAG_STYLE });
+            });
+            if (dealerEntries.length > DEALER_CAP) {
+                tags.push({
+                    key: 'dealer-overflow',
+                    label: '+' + (dealerEntries.length - DEALER_CAP),
+                    tagStyle: OVERFLOW_TAG_STYLE
+                });
+            }
+
+            const badges = BADGE_DEFS
+                .filter(def => opp[def.field] === true)
+                .map(def => ({ key: def.key, label: def.label, className: def.className }));
 
             map[opp.StageName].push({
                 Id: opp.Id,
@@ -170,11 +208,11 @@ export default class OpportunityKanban extends LightningElement {
                 accountName: opp.Account ? opp.Account.Name : opp.Name,
                 uniqueId: opp.Unique_ID__c || '',
                 tags,
+                badges,
+                isOnHold: opp.On_Hold__c === true,
                 rawAmount: opp.Amount || 0,
                 amountFormatted: opp.Amount ? currencyFormatter.format(opp.Amount) : null,
                 stageStripStyle: `background:${staleColor};`,
-                progressFillStyle: `width:${progress}%; background:#9b9b9b;`,
-                progressPct: progress + '%',
                 ownerInitials: getInitials(ownerName),
                 ownerName,
                 ownerAvatarStyle: `background:${palette.bg}; color:${palette.fg};`,
@@ -185,6 +223,7 @@ export default class OpportunityKanban extends LightningElement {
 
         this.columns = STAGES.map(stage => {
             const opps = map[stage];
+            opps.sort((a, b) => (a.isOnHold === b.isOnHold) ? 0 : (a.isOnHold ? 1 : -1));
             const total = opps.reduce((sum, o) => sum + (o.rawAmount || 0), 0);
             return {
                 stage,
@@ -235,6 +274,7 @@ export default class OpportunityKanban extends LightningElement {
             }
             if (col.stage === targetStage) {
                 const opps = [...col.opportunities, this.draggedOpp];
+                opps.sort((a, b) => (a.isOnHold === b.isOnHold) ? 0 : (a.isOnHold ? 1 : -1));
                 const total = opps.reduce((s, o) => s + (o.rawAmount || 0), 0);
                 return { ...col, opportunities: opps, count: opps.length, totalFormatted: total > 0 ? currencyFormatter.format(total) : null };
             }

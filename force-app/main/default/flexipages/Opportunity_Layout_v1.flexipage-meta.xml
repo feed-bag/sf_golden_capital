@@ -128,40 +128,6 @@
                     <name>uiBehavior</name>
                     <value>none</value>
                 </fieldInstanceProperties>
-                <fieldItem>Record.Dealer__c</fieldItem>
-                <identifier>RecordDealer__cField</identifier>
-                <visibilityRule>
-                    <criteria>
-                        <leftValue>{!Record.Private_Party__c}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>false</rightValue>
-                    </criteria>
-                </visibilityRule>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
-                <fieldItem>Record.Dealer_Representative__c</fieldItem>
-                <identifier>RecordDealer_Representative__cField</identifier>
-                <visibilityRule>
-                    <criteria>
-                        <leftValue>{!Record.Private_Party__c}</leftValue>
-                        <operator>EQUAL</operator>
-                        <rightValue>false</rightValue>
-                    </criteria>
-                </visibilityRule>
-            </fieldInstance>
-        </itemInstances>
-        <itemInstances>
-            <fieldInstance>
-                <fieldInstanceProperties>
-                    <name>uiBehavior</name>
-                    <value>none</value>
-                </fieldInstanceProperties>
                 <fieldItem>Record.split_representative__c</fieldItem>
                 <identifier>Recordsplit_representative_cField</identifier>
             </fieldInstance>
@@ -904,6 +870,12 @@
                 </componentInstanceProperties>
                 <componentName>force:relatedListSingleContainer</componentName>
                 <identifier>force_relatedListSingleContainer3</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentName>opportunityDealers</componentName>
+                <identifier>c_opportunityDealers</identifier>
             </componentInstance>
         </itemInstances>
         <itemInstances>

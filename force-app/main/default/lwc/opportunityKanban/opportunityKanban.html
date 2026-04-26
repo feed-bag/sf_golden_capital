@@ -8,12 +8,22 @@
         </template>
         <template if:true={columns}>
             <div class="kb-toolbar">
-                <label class="kb-filter-label" for="ownerFilter">Owner</label>
-                <select id="ownerFilter" class="kb-filter-select" onchange={handleOwnerFilter}>
-                    <template for:each={ownerOptions} for:item="opt">
-                        <option key={opt.value} value={opt.value} selected={opt.selected}>{opt.label}</option>
-                    </template>
-                </select>
+                <div class="kb-filter">
+                    <label class="kb-filter-label" for="ownerFilter">Owner</label>
+                    <select id="ownerFilter" class="kb-filter-select" onchange={handleOwnerFilter}>
+                        <template for:each={ownerOptions} for:item="opt">
+                            <option key={opt.value} value={opt.value} selected={opt.selected}>{opt.label}</option>
+                        </template>
+                    </select>
+                </div>
+                <div class="kb-filter">
+                    <button type="button"
+                            class={onHoldButtonClass}
+                            aria-pressed={onHoldAriaPressed}
+                            onclick={handleOnHoldToggle}>
+                        On Hold
+                    </button>
+                </div>
             </div>
             <div class="kb-board">
                 <template for:each={columns} for:item="col">
@@ -55,15 +65,13 @@
                                     <template if:true={opp.amountFormatted}>
                                         <p class="kb-amount">{opp.amountFormatted}</p>
                                     </template>
-                                    <div class="kb-progress-wrap">
-                                        <div class="kb-progress-label">
-                                            <span>Stage progress</span>
-                                            <span>{opp.progressPct}</span>
+                                    <template if:true={opp.badges.length}>
+                                        <div class="kb-badges">
+                                            <template for:each={opp.badges} for:item="badge">
+                                                <span key={badge.key} class={badge.className}>{badge.label}</span>
+                                            </template>
                                         </div>
-                                        <div class="kb-progress-track">
-                                            <div class="kb-progress-fill" style={opp.progressFillStyle}></div>
-                                        </div>
-                                    </div>
+                                    </template>
                                     <div class="kb-footer">
                                         <div class="kb-owner">
                                             <div class="kb-avatar" style={opp.ownerAvatarStyle}>{opp.ownerInitials}</div>

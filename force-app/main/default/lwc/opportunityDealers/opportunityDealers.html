@@ -1,0 +1,18 @@
+<template>
+    <article class="od-card">
+        <header class="od-header">Dealers</header>
+        <template if:true={hasDealers}>
+            <div class="od-pills">
+                <template for:each={dealers} for:item="dealer">
+                    <a key={dealer.id} class="od-pill" href={dealer.url} target="_top">{dealer.name}</a>
+                </template>
+            </div>
+        </template>
+        <template if:false={hasDealers}>
+            <p class="od-empty">No dealers yet — add Equipment records below.</p>
+        </template>
+        <template if:true={error}>
+            <p class="od-error">Could not load dealers.</p>
+        </template>
+    </article>
+</template>

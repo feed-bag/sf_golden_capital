@@ -257,6 +257,27 @@ private class OpportunityDashboardControllerTest {
     }
 
     @isTest
+    static void testAnnualGoalBlock() {
+        Account acct = [SELECT Id FROM Account WHERE Name = 'Test Account' LIMIT 1];
+        insert new Opportunity(Name = 'Goal Funded', AccountId = acct.Id,
+            StageName = 'Prospecting', CloseDate = Date.today(),
+            Amount = 250000, Funded_Date__c = Date.today());
+
+        Test.startTest();
+        OpportunityDashboardController.DashboardMetrics m =
+            OpportunityDashboardController.getDashboardMetrics('MONTH', null);
+        Test.stopTest();
+
+        System.assertNotEquals(null, m.annualGoal, 'Annual goal block should be populated');
+        System.assertEquals(10000000, m.annualGoal.goal);
+        System.assert(m.annualGoal.actual >= 250000, 'Should include current-year funded amount');
+        System.assert(m.annualGoal.daysInYear == 365 || m.annualGoal.daysInYear == 366, 'daysInYear should reflect calendar year');
+        System.assert(m.annualGoal.daysElapsed >= 1 && m.annualGoal.daysElapsed <= m.annualGoal.daysInYear);
+        System.assert(m.annualGoal.expectedToDate >= 0 && m.annualGoal.expectedToDate <= m.annualGoal.goal);
+        System.assertEquals(false, m.annualGoal.ownerScoped, 'No owner filter → not owner-scoped');
+    }
+
+    @isTest
     static void testGetOpportunitiesForKpi() {
         Account acct = [SELECT Id FROM Account WHERE Name = 'Test Account' LIMIT 1];
         insert new Opportunity(

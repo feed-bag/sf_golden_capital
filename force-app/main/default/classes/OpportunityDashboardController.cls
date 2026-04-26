@@ -120,8 +120,36 @@ public with sharing class OpportunityDashboardController {
         m.volumeFundedByMonth  = computeVolumeFundedByMonth(ownerId);
         m.pipelineByStage  = computePipelineByStage(ownerId);
         m.topOwners        = (ownerId == null) ? computeTopOwners(current) : new List<OwnerPerformance>();
+        m.annualGoal       = computeAnnualGoal(ownerId);
 
         return m;
+    }
+
+    // Annual funding goal vs actual + on-pace expectation. Goal is intentionally hardcoded for now;
+    // promote to a Custom Metadata Type if it needs to vary by org or by year.
+    private static AnnualGoal computeAnnualGoal(Id ownerId) {
+        Date today = Date.today();
+        Date yearStart = Date.newInstance(today.year(), 1, 1);
+        Date yearEnd   = Date.newInstance(today.year(), 12, 31);
+
+        AggregateResult[] rows = Database.queryWithBinds(
+            'SELECT SUM(Amount) total FROM Opportunity ' +
+            'WHERE Funded_Date__c >= :yearStart AND Funded_Date__c <= :yearEnd' + ownerClause(ownerId),
+            new Map<String, Object>{
+                'yearStart' => yearStart, 'yearEnd' => yearEnd, 'ownerId' => ownerId
+            },
+            AccessLevel.USER_MODE
+        );
+
+        AnnualGoal g = new AnnualGoal();
+        g.goal           = 10000000;
+        g.actual         = decOrZero(rows[0], 'total');
+        g.daysInYear     = yearStart.daysBetween(yearEnd) + 1;
+        g.daysElapsed    = Math.min(yearStart.daysBetween(today) + 1, g.daysInYear);
+        g.expectedToDate = (g.goal * g.daysElapsed) / g.daysInYear;
+        g.year           = today.year();
+        g.ownerScoped    = ownerId != null;
+        return g;
     }
 
     // KPI tile drill-down. Returns up to 200 opps behind a given tile, respecting the same
@@ -397,6 +425,16 @@ public with sharing class OpportunityDashboardController {
         @AuraEnabled public List<MonthlyPoint> volumeFundedByMonth;
         @AuraEnabled public List<StageBucket> pipelineByStage;
         @AuraEnabled public List<OwnerPerformance> topOwners;
+        @AuraEnabled public AnnualGoal annualGoal;
+    }
+    public class AnnualGoal {
+        @AuraEnabled public Decimal goal;
+        @AuraEnabled public Decimal actual;
+        @AuraEnabled public Decimal expectedToDate;
+        @AuraEnabled public Integer daysInYear;
+        @AuraEnabled public Integer daysElapsed;
+        @AuraEnabled public Integer year;
+        @AuraEnabled public Boolean ownerScoped;
     }
     public class Period {
         @AuraEnabled public String range;

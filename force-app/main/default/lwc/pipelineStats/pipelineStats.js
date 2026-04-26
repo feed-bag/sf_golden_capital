@@ -311,6 +311,46 @@ export default class PipelineStats extends LightningElement {
         return this.drillKey === 'new';
     }
 
+    get goalTracker() {
+        if (!this.metrics || !this.metrics.annualGoal) return null;
+        const g = this.metrics.annualGoal;
+        const goal     = Number(g.goal)           || 0;
+        const actual   = Number(g.actual)         || 0;
+        const expected = Number(g.expectedToDate) || 0;
+        const daysIn   = Number(g.daysInYear)     || 365;
+        const elapsed  = Number(g.daysElapsed)    || 0;
+        const actualPct   = goal > 0 ? Math.min(100, (actual   / goal) * 100) : 0;
+        const expectedPct = goal > 0 ? Math.min(100, (expected / goal) * 100) : 0;
+        // Project full-year landing if we keep current daily pace.
+        const projected = elapsed > 0 ? (actual / elapsed) * daysIn : 0;
+        const variance     = actual - expected;
+        const variancePct  = expected > 0 ? (variance / expected) * 100 : 0;
+        const onPace = variance >= 0;
+        return {
+            year:           g.year,
+            ownerScoped:    g.ownerScoped,
+            scopeLabel:     g.ownerScoped ? 'Selected owner' : 'All owners',
+            goalText:       CURRENCY_COMPACT.format(goal),
+            actualText:     CURRENCY_FULL.format(actual),
+            expectedText:   CURRENCY_FULL.format(expected),
+            projectedText:  CURRENCY_FULL.format(projected),
+            varianceText:   `${variance >= 0 ? '+' : '−'}${CURRENCY_FULL.format(Math.abs(variance))}`,
+            variancePctText:`${variance >= 0 ? '+' : ''}${variancePct.toFixed(1)}%`,
+            actualPctText:  `${actualPct.toFixed(1)}% of goal`,
+            expectedPctText:`${expectedPct.toFixed(1)}% expected by today`,
+            actualBarStyle: `width:${actualPct.toFixed(2)}%;`,
+            expectedMarkerStyle: `left:${expectedPct.toFixed(2)}%;`,
+            onPace,
+            statusCls:      onPace ? 'ps-goal-status ps-goal-status--ahead' : 'ps-goal-status ps-goal-status--behind',
+            statusText:     onPace ? 'Ahead of pace' : 'Behind pace',
+            daysLabel:      `Day ${elapsed} of ${daysIn}`
+        };
+    }
+
+    get hasGoalTracker() {
+        return this.goalTracker !== null;
+    }
+
     get hasTopOwners() {
         return this.metrics && this.metrics.topOwners && this.metrics.topOwners.length > 0;
     }

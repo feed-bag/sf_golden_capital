@@ -144,6 +144,54 @@
                     </article>
                 </template>
             </section>
+
+            <template if:true={hasGoalTracker}>
+                <section class="ps-goal">
+                    <article class="ps-chart-card ps-goal-card">
+                        <header class="ps-chart-header">
+                            <h3>Annual Funded Volume — {goalTracker.goalText} Goal</h3>
+                            <span class="ps-chart-sub">{goalTracker.year} · {goalTracker.scopeLabel} · {goalTracker.daysLabel}</span>
+                        </header>
+
+                        <div class="ps-goal-grid">
+                            <div class="ps-goal-stat">
+                                <span class="ps-goal-stat-label">Actual YTD</span>
+                                <span class="ps-goal-stat-value">{goalTracker.actualText}</span>
+                                <span class="ps-goal-stat-sub">{goalTracker.actualPctText}</span>
+                            </div>
+                            <div class="ps-goal-stat">
+                                <span class="ps-goal-stat-label">On-Pace Expected</span>
+                                <span class="ps-goal-stat-value">{goalTracker.expectedText}</span>
+                                <span class="ps-goal-stat-sub">{goalTracker.expectedPctText}</span>
+                            </div>
+                            <div class="ps-goal-stat">
+                                <span class="ps-goal-stat-label">Projected Year-End</span>
+                                <span class="ps-goal-stat-value">{goalTracker.projectedText}</span>
+                                <span class="ps-goal-stat-sub">at current pace</span>
+                            </div>
+                            <div class="ps-goal-stat">
+                                <span class="ps-goal-stat-label">vs Pace</span>
+                                <span class={goalTracker.statusCls}>{goalTracker.statusText}</span>
+                                <span class="ps-goal-stat-sub">{goalTracker.varianceText} ({goalTracker.variancePctText})</span>
+                            </div>
+                        </div>
+
+                        <div class="ps-goal-bar">
+                            <div class="ps-goal-bar-track">
+                                <div class="ps-goal-bar-fill" style={goalTracker.actualBarStyle}></div>
+                                <div class="ps-goal-bar-marker" style={goalTracker.expectedMarkerStyle} title="On-pace expected to date">
+                                    <span class="ps-goal-bar-marker-line"></span>
+                                    <span class="ps-goal-bar-marker-label">on pace</span>
+                                </div>
+                            </div>
+                            <div class="ps-goal-bar-axis">
+                                <span>$0</span>
+                                <span>{goalTracker.goalText}</span>
+                            </div>
+                        </div>
+                    </article>
+                </section>
+            </template>
         </template>
 
         <template if:true={drillOpen}>

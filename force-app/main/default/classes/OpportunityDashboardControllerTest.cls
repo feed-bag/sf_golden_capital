@@ -180,9 +180,42 @@ private class OpportunityDashboardControllerTest {
         System.assert(m.kpis.volumeFundedPrev >= 25000, 'Previous-month funded volume should include prior-month test record');
         System.assert(m.kpis.dealsFunded >= 1);
         System.assert(m.kpis.newOpportunities >= 1, 'Current-month created should include the new opps');
-        System.assertEquals(12, m.opportunitiesByMonth.size(), '12-month timeline expected');
-        System.assertEquals(12, m.volumeFundedByMonth.size(), '12-month timeline expected');
+        System.assert(m.opportunitiesByMonth.size() >= 28 && m.opportunitiesByMonth.size() <= 31,
+            'MONTH should produce daily buckets for the calendar month');
+        System.assert(m.volumeFundedByMonth.size() >= 28 && m.volumeFundedByMonth.size() <= 31,
+            'MONTH should produce daily buckets for the calendar month');
         System.assertNotEquals(null, m.pipelineByStage, 'Pipeline-by-stage list should be present');
+    }
+
+    @isTest
+    static void testSeriesGranularityScalesWithRange() {
+        Account acct = [SELECT Id FROM Account WHERE Name = 'Test Account' LIMIT 1];
+        insert new Opportunity(Name = 'Series Funded', AccountId = acct.Id,
+            StageName = 'Prospecting', CloseDate = Date.today(),
+            Amount = 1000, Funded_Date__c = Date.today());
+
+        Test.startTest();
+        OpportunityDashboardController.DashboardMetrics week =
+            OpportunityDashboardController.getDashboardMetrics('WEEK', null);
+        OpportunityDashboardController.DashboardMetrics month =
+            OpportunityDashboardController.getDashboardMetrics('MONTH', null);
+        OpportunityDashboardController.DashboardMetrics quarter =
+            OpportunityDashboardController.getDashboardMetrics('QUARTER', null);
+        OpportunityDashboardController.DashboardMetrics year =
+            OpportunityDashboardController.getDashboardMetrics('YEAR', null);
+        Test.stopTest();
+
+        // WEEK → 7 daily buckets
+        System.assertEquals(7, week.opportunitiesByMonth.size(), 'WEEK should produce 7 daily buckets');
+        System.assertEquals(7, week.volumeFundedByMonth.size());
+        // MONTH → 28-31 daily buckets
+        System.assert(month.opportunitiesByMonth.size() >= 28 && month.opportunitiesByMonth.size() <= 31,
+            'MONTH should produce daily buckets for the month');
+        // QUARTER → ~13 weekly buckets
+        System.assert(quarter.opportunitiesByMonth.size() >= 12 && quarter.opportunitiesByMonth.size() <= 14,
+            'QUARTER should produce roughly 13 weekly buckets');
+        // YEAR → 12 monthly buckets
+        System.assertEquals(12, year.opportunitiesByMonth.size(), 'YEAR should produce 12 monthly buckets');
     }
 
     @isTest

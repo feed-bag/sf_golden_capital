@@ -100,6 +100,15 @@ export default class PipelineStats extends LightningElement {
         return this.metrics ? this.metrics.period.label : '';
     }
 
+    get seriesGranularityLabel() {
+        switch (this.timeRange) {
+            case 'WEEK':    return 'daily';
+            case 'QUARTER': return 'weekly';
+            case 'YEAR':    return 'monthly';
+            default:        return 'daily';
+        }
+    }
+
     get hasMetrics() {
         return !!this.metrics;
     }
@@ -169,23 +178,26 @@ export default class PipelineStats extends LightningElement {
         ];
     }
 
-    // Inline-SVG bar chart geometry. 12 bars across a 720x180 viewBox with axis room.
+    // Inline-SVG bar chart geometry. Bars span a 720x180 viewBox; bucket count varies by period.
     _buildBars(points, isCurrency) {
         const W = 720, H = 180, PAD_L = 8, PAD_R = 8, PAD_T = 16, PAD_B = 28;
         const innerW = W - PAD_L - PAD_R;
         const innerH = H - PAD_T - PAD_B;
+        const n = points.length || 1;
         const max = Math.max(1, ...points.map(p => Number(p.value) || 0));
-        const slot = innerW / points.length;
-        const barW = slot * 0.62;
+        const slot = innerW / n;
+        const barW = Math.max(2, slot * 0.62);
+        // Dense buckets: hide per-bar value labels (overlap), thin axis labels.
+        const dense = n > 12;
+        const labelEvery = n > 28 ? Math.ceil(n / 12) : (n > 18 ? 2 : 1);
         return points.map((p, i) => {
             const v = Number(p.value) || 0;
             const h = (v / max) * innerH;
             const x = PAD_L + i * slot + (slot - barW) / 2;
             const y = PAD_T + (innerH - h);
-            // Calculate %∆ vs the previous bar so we can show trend hints
             let trendCls = '';
             let trendText = '';
-            if (i > 0) {
+            if (i > 0 && !dense) {
                 const prev = Number(points[i - 1].value) || 0;
                 if (prev !== 0 || v !== 0) {
                     const d = prev === 0 ? (v > 0 ? 100 : 0) : ((v - prev) / Math.abs(prev)) * 100;
@@ -195,12 +207,15 @@ export default class PipelineStats extends LightningElement {
                     }
                 }
             }
-            const valueText = isCurrency
-                ? (v >= 1000 ? CURRENCY_COMPACT.format(v) : (v ? '$' + v : ''))
-                : (v ? NUMBER_FMT.format(v) : '');
+            const valueText = dense
+                ? ''
+                : (isCurrency
+                    ? (v >= 1000 ? CURRENCY_COMPACT.format(v) : (v ? '$' + v : ''))
+                    : (v ? NUMBER_FMT.format(v) : ''));
+            const showLabel = (i % labelEvery === 0) || (i === n - 1);
             return {
-                key: p.label,
-                label: p.label,
+                key: p.label + '-' + i,
+                label: showLabel ? p.label : '',
                 value: v,
                 valueText,
                 trendText,

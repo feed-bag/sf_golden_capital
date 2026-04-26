@@ -62,7 +62,7 @@
                 <article class="ps-chart-card">
                     <header class="ps-chart-header">
                         <h3>Volume Funded</h3>
-                        <span class="ps-chart-sub">Last 12 months</span>
+                        <span class="ps-chart-sub">{periodLabel} · {seriesGranularityLabel}</span>
                     </header>
                     <svg viewBox="0 0 720 180" class="ps-chart-svg" preserveAspectRatio="none">
                         <template for:each={volumeFundedBars} for:item="b">
@@ -78,7 +78,7 @@
                 <article class="ps-chart-card">
                     <header class="ps-chart-header">
                         <h3>Opportunities Created</h3>
-                        <span class="ps-chart-sub">Last 12 months · % shows month-over-month change</span>
+                        <span class="ps-chart-sub">{periodLabel} · {seriesGranularityLabel} · % shows bucket-over-bucket change</span>
                     </header>
                     <svg viewBox="0 0 720 180" class="ps-chart-svg" preserveAspectRatio="none">
                         <template for:each={oppCreatedBars} for:item="b">

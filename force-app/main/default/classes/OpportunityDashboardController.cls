@@ -116,8 +116,8 @@ public with sharing class OpportunityDashboardController {
         m.period = current;
 
         m.kpis             = computeKpis(current, previous, ownerId);
-        m.opportunitiesByMonth = computeOppsByMonth(ownerId);
-        m.volumeFundedByMonth  = computeVolumeFundedByMonth(ownerId);
+        m.opportunitiesByMonth = computeSeries(current, ownerId, 'CREATED');
+        m.volumeFundedByMonth  = computeSeries(current, ownerId, 'FUNDED');
         m.pipelineByStage  = computePipelineByStage(ownerId);
         m.topOwners        = (ownerId == null) ? computeTopOwners(current) : new List<OwnerPerformance>();
         m.annualGoal       = computeAnnualGoal(ownerId);
@@ -303,59 +303,110 @@ public with sharing class OpportunityDashboardController {
         return k;
     }
 
-    // Last 12 months of opportunity intake (count by calendar month).
-    private static List<MonthlyPoint> computeOppsByMonth(Id ownerId) {
-        Date today = Date.today();
-        Date windowStart = Date.newInstance(today.year(), today.month(), 1).addMonths(-11);
+    // Range-aware time series. Granularity scales to the selected period so the chart
+    // always shows ~7–31 buckets:
+    //   WEEK    → 7 daily buckets
+    //   MONTH   → daily buckets across the calendar month
+    //   QUARTER → ~13 weekly buckets
+    //   YEAR    → 12 monthly buckets
+    // metric ∈ {'CREATED','FUNDED'}. CREATED counts opps by CreatedDate; FUNDED sums Amount by Funded_Date__c.
+    private static List<MonthlyPoint> computeSeries(Period p, Id ownerId, String metric) {
+        Boolean isCreated = (metric == 'CREATED');
+        String dateField = isCreated ? 'CreatedDate' : 'Funded_Date__c';
 
-        AggregateResult[] rows = Database.queryWithBinds(
-            'SELECT CALENDAR_YEAR(CreatedDate) y, CALENDAR_MONTH(CreatedDate) m, COUNT(Id) cnt ' +
-            'FROM Opportunity WHERE CreatedDate >= :windowStart' + ownerClause(ownerId) + ' ' +
-            'GROUP BY CALENDAR_YEAR(CreatedDate), CALENDAR_MONTH(CreatedDate)',
-            new Map<String, Object>{'windowStart' => windowStart, 'ownerId' => ownerId},
-            AccessLevel.USER_MODE
-        );
-        return fillMonthlyTimeline(rows, windowStart, 'cnt', false);
-    }
+        // Pull the matching records (capped to keep the query bounded; one record per opp).
+        String soql = 'SELECT ' + dateField + ', Amount FROM Opportunity ' +
+            'WHERE ' + dateField + ' >= :startDt AND ' + dateField + ' <= :endDt' +
+            ownerClause(ownerId) + ' LIMIT 50000';
+        List<Opportunity> rows = Database.queryWithBinds(soql,
+            new Map<String, Object>{'startDt' => p.startDate, 'endDt' => p.endDate, 'ownerId' => ownerId},
+            AccessLevel.USER_MODE);
 
-    // Last 12 months of funded volume (SUM Amount by Funded_Date__c month).
-    private static List<MonthlyPoint> computeVolumeFundedByMonth(Id ownerId) {
-        Date today = Date.today();
-        Date windowStart = Date.newInstance(today.year(), today.month(), 1).addMonths(-11);
+        // Build empty buckets for the period so missing slots render as zero.
+        List<MonthlyPoint> buckets = buildBuckets(p);
+        Map<String, MonthlyPoint> byKey = new Map<String, MonthlyPoint>();
+        for (MonthlyPoint b : buckets) byKey.put(b.bucketKey, b);
 
-        AggregateResult[] rows = Database.queryWithBinds(
-            'SELECT CALENDAR_YEAR(Funded_Date__c) y, CALENDAR_MONTH(Funded_Date__c) m, SUM(Amount) total ' +
-            'FROM Opportunity WHERE Funded_Date__c >= :windowStart' + ownerClause(ownerId) + ' ' +
-            'GROUP BY CALENDAR_YEAR(Funded_Date__c), CALENDAR_MONTH(Funded_Date__c)',
-            new Map<String, Object>{'windowStart' => windowStart, 'ownerId' => ownerId},
-            AccessLevel.USER_MODE
-        );
-        return fillMonthlyTimeline(rows, windowStart, 'total', true);
-    }
-
-    // Pad missing months with zero so the time series always has 12 contiguous points.
-    private static List<MonthlyPoint> fillMonthlyTimeline(
-        AggregateResult[] rows, Date windowStart, String valueAlias, Boolean isCurrency
-    ) {
-        Map<String, Decimal> seen = new Map<String, Decimal>();
-        for (AggregateResult ar : rows) {
-            Integer y = (Integer) ar.get('y');
-            Integer m = (Integer) ar.get('m');
-            Decimal v = (Decimal) ar.get(valueAlias);
-            seen.put(y + '-' + m, v == null ? 0 : v);
+        for (Opportunity o : rows) {
+            Date d = isCreated ? o.CreatedDate.date() : o.Funded_Date__c;
+            if (d == null) continue;
+            String k = bucketKeyFor(p.range, d);
+            MonthlyPoint b = byKey.get(k);
+            if (b == null) continue;
+            if (isCreated) {
+                b.value = (b.value == null ? 0 : b.value) + 1;
+            } else {
+                Decimal amt = (o.Amount == null) ? 0 : o.Amount;
+                b.value = (b.value == null ? 0 : b.value) + amt;
+            }
         }
+        return buckets;
+    }
+
+    private static List<MonthlyPoint> buildBuckets(Period p) {
         List<MonthlyPoint> out = new List<MonthlyPoint>();
-        for (Integer i = 0; i < 12; i++) {
-            Date d = windowStart.addMonths(i);
-            String key = d.year() + '-' + d.month();
-            MonthlyPoint p = new MonthlyPoint();
-            p.year  = d.year();
-            p.month = d.month();
-            p.label = monthLabel(d.month()) + ' ' + String.valueOf(d.year()).substring(2);
-            p.value = seen.containsKey(key) ? seen.get(key) : 0;
-            out.add(p);
+        if (p.range == 'YEAR') {
+            for (Integer i = 0; i < 12; i++) {
+                Date d = Date.newInstance(p.startDate.year(), i + 1, 1);
+                MonthlyPoint mp = new MonthlyPoint();
+                mp.year = d.year();
+                mp.month = d.month();
+                mp.label = monthLabel(d.month());
+                mp.bucketKey = d.year() + '-M-' + d.month();
+                mp.value = 0;
+                out.add(mp);
+            }
+        } else if (p.range == 'QUARTER') {
+            // Weekly buckets (Mon-anchored) covering the quarter.
+            Date cursor = weekStart(p.startDate);
+            while (cursor <= p.endDate) {
+                MonthlyPoint mp = new MonthlyPoint();
+                mp.year  = cursor.year();
+                mp.month = cursor.month();
+                mp.label = monthLabel(cursor.month()) + ' ' + cursor.day();
+                mp.bucketKey = cursor.year() + '-W-' + cursor.toStartOfMonth().daysBetween(cursor) + '-' + cursor.month();
+                mp.value = 0;
+                out.add(mp);
+                cursor = cursor.addDays(7);
+            }
+        } else {
+            // WEEK or MONTH → daily buckets.
+            Date cursor = p.startDate;
+            while (cursor <= p.endDate) {
+                MonthlyPoint mp = new MonthlyPoint();
+                mp.year  = cursor.year();
+                mp.month = cursor.month();
+                mp.label = (p.range == 'WEEK')
+                    ? shortDow(cursor) + ' ' + cursor.day()
+                    : String.valueOf(cursor.day());
+                mp.bucketKey = cursor.year() + '-D-' + cursor.month() + '-' + cursor.day();
+                mp.value = 0;
+                out.add(mp);
+                cursor = cursor.addDays(1);
+            }
         }
         return out;
+    }
+
+    private static String bucketKeyFor(String range, Date d) {
+        if (range == 'YEAR')    return d.year() + '-M-' + d.month();
+        if (range == 'QUARTER') {
+            Date wk = weekStart(d);
+            return wk.year() + '-W-' + wk.toStartOfMonth().daysBetween(wk) + '-' + wk.month();
+        }
+        return d.year() + '-D-' + d.month() + '-' + d.day();
+    }
+
+    private static Date weekStart(Date d) {
+        // Anchor week to Monday (Date.toStartOfWeek anchors to org locale; Monday is the common business default).
+        Date sw = d.toStartOfWeek();
+        // Salesforce considers Sunday the start in en_US; shift forward by 1 to Monday.
+        return sw.addDays(1) > d ? sw.addDays(-6) : sw.addDays(1);
+    }
+
+    private static String shortDow(Date d) {
+        DateTime dt = DateTime.newInstance(d.year(), d.month(), d.day());
+        return dt.format('EEE');
     }
 
     private static List<StageBucket> computePipelineByStage(Id ownerId) {
@@ -462,6 +513,8 @@ public with sharing class OpportunityDashboardController {
         @AuraEnabled public Integer month;
         @AuraEnabled public String  label;
         @AuraEnabled public Decimal value;
+        // Internal — used to merge query results into the pre-built bucket list.
+        public String bucketKey;
     }
     public class StageBucket {
         @AuraEnabled public String  stage;

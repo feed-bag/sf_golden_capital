@@ -25,6 +25,7 @@
         <fullName>On Hold</fullName>
         <default>false</default>
         <label>On Hold</label>
+        <isActive>false</isActive>
         <closed>false</closed>
         <forecastCategory>Pipeline</forecastCategory>
         <probability>20</probability>

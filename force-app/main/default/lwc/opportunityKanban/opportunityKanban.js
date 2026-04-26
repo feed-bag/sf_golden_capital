@@ -8,7 +8,6 @@ import updateOpportunityStage from '@salesforce/apex/OpportunityDashboardControl
 const STAGES = [
     'App In',
     'Sales Follow Up',
-    'On Hold',
     'Internal Review',
     'Submitted',
     'Approved',

@@ -145,8 +145,8 @@ public with sharing class OpportunityDashboardController {
             filter  = 'CreatedDate >= :curStart AND CreatedDate <= :curEnd AND Has_Been_Approved__c = true';
             orderBy = 'CreatedDate DESC';
         } else if (kpiKey == 'funded') {
-            // Cohort: created in the period AND ever funded.
-            filter  = 'CreatedDate >= :curStart AND CreatedDate <= :curEnd AND Funded__c = true';
+            // Cohort: created in the period AND ever funded (Funded_Date__c populated).
+            filter  = 'CreatedDate >= :curStart AND CreatedDate <= :curEnd AND Funded_Date__c != null';
             orderBy = 'CreatedDate DESC';
         } else {
             // volume / deals / avg → opps funded in the period
@@ -254,13 +254,13 @@ public with sharing class OpportunityDashboardController {
         AggregateResult[] curCohortFunded = Database.queryWithBinds(
             'SELECT COUNT(Id) cnt FROM Opportunity ' +
             'WHERE CreatedDate >= :curStart AND CreatedDate <= :curEnd ' +
-            'AND Funded__c = true' + ownerClause(ownerId),
+            'AND Funded_Date__c != null' + ownerClause(ownerId),
             binds, AccessLevel.USER_MODE
         );
         AggregateResult[] prevCohortFunded = Database.queryWithBinds(
             'SELECT COUNT(Id) cnt FROM Opportunity ' +
             'WHERE CreatedDate >= :prevStart AND CreatedDate <= :prevEnd ' +
-            'AND Funded__c = true' + ownerClause(ownerId),
+            'AND Funded_Date__c != null' + ownerClause(ownerId),
             binds, AccessLevel.USER_MODE
         );
 

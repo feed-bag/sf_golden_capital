@@ -221,7 +221,7 @@ private class OpportunityDashboardControllerTest {
         insert new List<Opportunity>{
             new Opportunity(Name = 'Cohort Funded', AccountId = acct.Id,
                 StageName = 'Prospecting', CloseDate = today, Amount = 10000,
-                Has_Been_Approved__c = true, Funded__c = true, Funded_Date__c = today),
+                Has_Been_Approved__c = true, Funded_Date__c = today),
             new Opportunity(Name = 'Cohort Approved', AccountId = acct.Id,
                 StageName = 'Prospecting', CloseDate = today, Amount = 5000,
                 Has_Been_Approved__c = true),

@@ -58,7 +58,7 @@
 /* KPI tiles */
 .ps-kpi-row {
     display: grid;
-    grid-template-columns: repeat(5, minmax(0, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
     gap: 0.75rem;
     padding: 1rem 1.5rem;
 }
@@ -88,6 +88,10 @@
 .ps-kpi-value {
     font-size: 1.6rem; font-weight: 700; color: #0f172a;
     font-variant-numeric: tabular-nums; line-height: 1.1;
+}
+.ps-kpi-subtext {
+    font-size: 0.7rem; color: #6b7280; font-weight: 500;
+    font-variant-numeric: tabular-nums;
 }
 .ps-delta {
     font-size: 0.72rem; font-weight: 600;
@@ -256,11 +260,7 @@
 
 /* Responsive collapse for narrow viewports */
 @media (max-width: 1100px) {
-    .ps-kpi-row { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     .ps-charts { grid-template-columns: 1fr; }
     .ps-bottom { grid-template-columns: 1fr; }
     .ps-stage-row { grid-template-columns: 120px 1fr 90px; }
-}
-@media (max-width: 700px) {
-    .ps-kpi-row { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }

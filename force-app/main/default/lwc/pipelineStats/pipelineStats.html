@@ -45,6 +45,9 @@
                             title="Click to view records">
                         <div class="ps-kpi-label">{tile.label}</div>
                         <div class="ps-kpi-value">{tile.value}</div>
+                        <template if:true={tile.subtext}>
+                            <div class="ps-kpi-subtext">{tile.subtext}</div>
+                        </template>
                         <template if:true={tile.hasDelta}>
                             <div class={tile.cls}>
                                 <span>{tile.text}</span>

@@ -140,6 +140,14 @@ public with sharing class OpportunityDashboardController {
         } else if (kpiKey == 'new') {
             filter  = 'CreatedDate >= :curStart AND CreatedDate <= :curEnd';
             orderBy = 'CreatedDate DESC';
+        } else if (kpiKey == 'approved') {
+            // Cohort: created in the period AND ever reached Approved.
+            filter  = 'CreatedDate >= :curStart AND CreatedDate <= :curEnd AND Has_Been_Approved__c = true';
+            orderBy = 'CreatedDate DESC';
+        } else if (kpiKey == 'funded') {
+            // Cohort: created in the period AND ever funded.
+            filter  = 'CreatedDate >= :curStart AND CreatedDate <= :curEnd AND Funded__c = true';
+            orderBy = 'CreatedDate DESC';
         } else {
             // volume / deals / avg → opps funded in the period
             filter  = 'Funded_Date__c >= :curStart AND Funded_Date__c <= :curEnd';
@@ -230,6 +238,31 @@ public with sharing class OpportunityDashboardController {
             'WHERE CreatedDate >= :prevStart AND CreatedDate <= :prevEnd' + ownerClause(ownerId),
             binds, AccessLevel.USER_MODE
         );
+        // Cohort conversion: of opps CREATED in the period, how many ever reached Approved / Funded.
+        AggregateResult[] curApproved = Database.queryWithBinds(
+            'SELECT COUNT(Id) cnt FROM Opportunity ' +
+            'WHERE CreatedDate >= :curStart AND CreatedDate <= :curEnd ' +
+            'AND Has_Been_Approved__c = true' + ownerClause(ownerId),
+            binds, AccessLevel.USER_MODE
+        );
+        AggregateResult[] prevApproved = Database.queryWithBinds(
+            'SELECT COUNT(Id) cnt FROM Opportunity ' +
+            'WHERE CreatedDate >= :prevStart AND CreatedDate <= :prevEnd ' +
+            'AND Has_Been_Approved__c = true' + ownerClause(ownerId),
+            binds, AccessLevel.USER_MODE
+        );
+        AggregateResult[] curCohortFunded = Database.queryWithBinds(
+            'SELECT COUNT(Id) cnt FROM Opportunity ' +
+            'WHERE CreatedDate >= :curStart AND CreatedDate <= :curEnd ' +
+            'AND Funded__c = true' + ownerClause(ownerId),
+            binds, AccessLevel.USER_MODE
+        );
+        AggregateResult[] prevCohortFunded = Database.queryWithBinds(
+            'SELECT COUNT(Id) cnt FROM Opportunity ' +
+            'WHERE CreatedDate >= :prevStart AND CreatedDate <= :prevEnd ' +
+            'AND Funded__c = true' + ownerClause(ownerId),
+            binds, AccessLevel.USER_MODE
+        );
 
         k.volumeFunded     = decOrZero(curFunded[0],  'total');
         k.volumeFundedPrev = decOrZero(prevFunded[0], 'total');
@@ -239,6 +272,12 @@ public with sharing class OpportunityDashboardController {
         k.newOpportunitiesPrev = intOrZero(prevCreated[0], 'cnt');
         k.avgDealSize     = (k.dealsFunded     > 0) ? (k.volumeFunded     / k.dealsFunded)     : 0;
         k.avgDealSizePrev = (k.dealsFundedPrev > 0) ? (k.volumeFundedPrev / k.dealsFundedPrev) : 0;
+
+        // Cohort conversion counts (numerators); ratios are computed in the LWC against newOpportunities.
+        k.cohortApproved     = intOrZero(curApproved[0],  'cnt');
+        k.cohortApprovedPrev = intOrZero(prevApproved[0], 'cnt');
+        k.cohortFunded       = intOrZero(curCohortFunded[0],  'cnt');
+        k.cohortFundedPrev   = intOrZero(prevCohortFunded[0], 'cnt');
 
         return k;
     }
@@ -382,6 +421,10 @@ public with sharing class OpportunityDashboardController {
         @AuraEnabled public Decimal avgDealSizePrev;
         @AuraEnabled public Integer newOpportunities;
         @AuraEnabled public Integer newOpportunitiesPrev;
+        @AuraEnabled public Integer cohortApproved;
+        @AuraEnabled public Integer cohortApprovedPrev;
+        @AuraEnabled public Integer cohortFunded;
+        @AuraEnabled public Integer cohortFundedPrev;
     }
     public class MonthlyPoint {
         @AuraEnabled public Integer year;

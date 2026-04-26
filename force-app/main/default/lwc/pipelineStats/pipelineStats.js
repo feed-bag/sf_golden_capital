@@ -108,6 +108,13 @@ export default class PipelineStats extends LightningElement {
         if (!this.metrics) return [];
         const k = this.metrics.kpis;
         const v = (curr, prev) => deltaMeta(curr, prev);
+        const ratio = (num, den) => (den > 0 ? (num / den) * 100 : 0);
+        const created     = k.newOpportunities     || 0;
+        const createdPrev = k.newOpportunitiesPrev || 0;
+        const approvePct     = ratio(k.cohortApproved, created);
+        const approvePctPrev = ratio(k.cohortApprovedPrev, createdPrev);
+        const fundedPct      = ratio(k.cohortFunded, created);
+        const fundedPctPrev  = ratio(k.cohortFundedPrev, createdPrev);
         return [
             {
                 key: 'pipeline',
@@ -139,9 +146,25 @@ export default class PipelineStats extends LightningElement {
             {
                 key: 'new',
                 label: `New Opportunities (${this.periodLabel})`,
-                value: NUMBER_FMT.format(k.newOpportunities || 0),
+                value: NUMBER_FMT.format(created),
                 hasDelta: true,
                 ...v(k.newOpportunities, k.newOpportunitiesPrev)
+            },
+            {
+                key: 'approved',
+                label: `App → Approved (${this.periodLabel})`,
+                value: `${approvePct.toFixed(1)}%`,
+                subtext: `${k.cohortApproved || 0} of ${created}`,
+                hasDelta: true,
+                ...v(approvePct, approvePctPrev)
+            },
+            {
+                key: 'funded',
+                label: `App → Funded (${this.periodLabel})`,
+                value: `${fundedPct.toFixed(1)}%`,
+                subtext: `${k.cohortFunded || 0} of ${created}`,
+                hasDelta: true,
+                ...v(fundedPct, fundedPctPrev)
             }
         ];
     }

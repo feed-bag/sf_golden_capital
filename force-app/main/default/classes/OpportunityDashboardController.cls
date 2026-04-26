@@ -303,11 +303,10 @@ public with sharing class OpportunityDashboardController {
         return k;
     }
 
-    // Range-aware time series. Granularity scales to the selected period so the chart
-    // always shows ~7–31 buckets:
-    //   WEEK    → 7 daily buckets
-    //   MONTH   → daily buckets across the calendar month
-    //   QUARTER → ~13 weekly buckets
+    // Range-aware time series. Granularity scales to the selected period:
+    //   WEEK    → 7 daily buckets (Mon–Sun of the week)
+    //   MONTH   → 4–5 weekly buckets (Week 1 = days 1–7, Week 2 = 8–14, …)
+    //   QUARTER → 3 monthly buckets
     //   YEAR    → 12 monthly buckets
     // metric ∈ {'CREATED','FUNDED'}. CREATED counts opps by CreatedDate; FUNDED sums Amount by Funded_Date__c.
     private static List<MonthlyPoint> computeSeries(Period p, Id ownerId, String metric) {
@@ -357,28 +356,40 @@ public with sharing class OpportunityDashboardController {
                 out.add(mp);
             }
         } else if (p.range == 'QUARTER') {
-            // Weekly buckets (Mon-anchored) covering the quarter.
-            Date cursor = weekStart(p.startDate);
-            while (cursor <= p.endDate) {
+            // 3 monthly buckets covering the quarter.
+            for (Integer i = 0; i < 3; i++) {
+                Date d = Date.newInstance(p.startDate.year(), p.startDate.month() + i, 1);
                 MonthlyPoint mp = new MonthlyPoint();
-                mp.year  = cursor.year();
-                mp.month = cursor.month();
-                mp.label = monthLabel(cursor.month()) + ' ' + cursor.day();
-                mp.bucketKey = cursor.year() + '-W-' + cursor.toStartOfMonth().daysBetween(cursor) + '-' + cursor.month();
+                mp.year = d.year();
+                mp.month = d.month();
+                mp.label = monthLabel(d.month());
+                mp.bucketKey = d.year() + '-M-' + d.month();
                 mp.value = 0;
                 out.add(mp);
-                cursor = cursor.addDays(7);
+            }
+        } else if (p.range == 'MONTH') {
+            // Weekly buckets within the month: Wk 1 = days 1–7, Wk 2 = 8–14, etc.
+            Integer daysInMonth = p.startDate.daysBetween(p.endDate) + 1;
+            Integer weeks = (Integer) Math.ceil(daysInMonth / 7.0);
+            for (Integer i = 0; i < weeks; i++) {
+                Integer firstDay = i * 7 + 1;
+                Integer lastDay  = Math.min((i + 1) * 7, daysInMonth);
+                MonthlyPoint mp = new MonthlyPoint();
+                mp.year  = p.startDate.year();
+                mp.month = p.startDate.month();
+                mp.label = monthLabel(p.startDate.month()) + ' ' + firstDay + '–' + lastDay;
+                mp.bucketKey = p.startDate.year() + '-WoM-' + p.startDate.month() + '-' + i;
+                mp.value = 0;
+                out.add(mp);
             }
         } else {
-            // WEEK or MONTH → daily buckets.
+            // WEEK → daily buckets.
             Date cursor = p.startDate;
             while (cursor <= p.endDate) {
                 MonthlyPoint mp = new MonthlyPoint();
                 mp.year  = cursor.year();
                 mp.month = cursor.month();
-                mp.label = (p.range == 'WEEK')
-                    ? shortDow(cursor) + ' ' + cursor.day()
-                    : String.valueOf(cursor.day());
+                mp.label = shortDow(cursor) + ' ' + cursor.day();
                 mp.bucketKey = cursor.year() + '-D-' + cursor.month() + '-' + cursor.day();
                 mp.value = 0;
                 out.add(mp);
@@ -389,19 +400,13 @@ public with sharing class OpportunityDashboardController {
     }
 
     private static String bucketKeyFor(String range, Date d) {
-        if (range == 'YEAR')    return d.year() + '-M-' + d.month();
-        if (range == 'QUARTER') {
-            Date wk = weekStart(d);
-            return wk.year() + '-W-' + wk.toStartOfMonth().daysBetween(wk) + '-' + wk.month();
+        if (range == 'YEAR' || range == 'QUARTER') return d.year() + '-M-' + d.month();
+        if (range == 'MONTH') {
+            // Index by week-of-month (zero-based). Day 1–7 → 0, 8–14 → 1, etc.
+            Integer weekIdx = (d.day() - 1) / 7;
+            return d.year() + '-WoM-' + d.month() + '-' + weekIdx;
         }
         return d.year() + '-D-' + d.month() + '-' + d.day();
-    }
-
-    private static Date weekStart(Date d) {
-        // Anchor week to Monday (Date.toStartOfWeek anchors to org locale; Monday is the common business default).
-        Date sw = d.toStartOfWeek();
-        // Salesforce considers Sunday the start in en_US; shift forward by 1 to Monday.
-        return sw.addDays(1) > d ? sw.addDays(-6) : sw.addDays(1);
     }
 
     private static String shortDow(Date d) {

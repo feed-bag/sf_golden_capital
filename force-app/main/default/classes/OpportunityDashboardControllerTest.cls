@@ -180,10 +180,10 @@ private class OpportunityDashboardControllerTest {
         System.assert(m.kpis.volumeFundedPrev >= 25000, 'Previous-month funded volume should include prior-month test record');
         System.assert(m.kpis.dealsFunded >= 1);
         System.assert(m.kpis.newOpportunities >= 1, 'Current-month created should include the new opps');
-        System.assert(m.opportunitiesByMonth.size() >= 28 && m.opportunitiesByMonth.size() <= 31,
-            'MONTH should produce daily buckets for the calendar month');
-        System.assert(m.volumeFundedByMonth.size() >= 28 && m.volumeFundedByMonth.size() <= 31,
-            'MONTH should produce daily buckets for the calendar month');
+        System.assert(m.opportunitiesByMonth.size() >= 4 && m.opportunitiesByMonth.size() <= 5,
+            'MONTH should produce 4–5 weekly buckets for the calendar month');
+        System.assert(m.volumeFundedByMonth.size() >= 4 && m.volumeFundedByMonth.size() <= 5,
+            'MONTH should produce 4–5 weekly buckets for the calendar month');
         System.assertNotEquals(null, m.pipelineByStage, 'Pipeline-by-stage list should be present');
     }
 
@@ -208,12 +208,11 @@ private class OpportunityDashboardControllerTest {
         // WEEK → 7 daily buckets
         System.assertEquals(7, week.opportunitiesByMonth.size(), 'WEEK should produce 7 daily buckets');
         System.assertEquals(7, week.volumeFundedByMonth.size());
-        // MONTH → 28-31 daily buckets
-        System.assert(month.opportunitiesByMonth.size() >= 28 && month.opportunitiesByMonth.size() <= 31,
-            'MONTH should produce daily buckets for the month');
-        // QUARTER → ~13 weekly buckets
-        System.assert(quarter.opportunitiesByMonth.size() >= 12 && quarter.opportunitiesByMonth.size() <= 14,
-            'QUARTER should produce roughly 13 weekly buckets');
+        // MONTH → 4–5 weekly buckets
+        System.assert(month.opportunitiesByMonth.size() >= 4 && month.opportunitiesByMonth.size() <= 5,
+            'MONTH should produce 4–5 weekly buckets');
+        // QUARTER → 3 monthly buckets
+        System.assertEquals(3, quarter.opportunitiesByMonth.size(), 'QUARTER should produce 3 monthly buckets');
         // YEAR → 12 monthly buckets
         System.assertEquals(12, year.opportunitiesByMonth.size(), 'YEAR should produce 12 monthly buckets');
     }

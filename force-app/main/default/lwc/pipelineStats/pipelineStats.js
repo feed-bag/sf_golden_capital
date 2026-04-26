@@ -103,9 +103,10 @@ export default class PipelineStats extends LightningElement {
     get seriesGranularityLabel() {
         switch (this.timeRange) {
             case 'WEEK':    return 'daily';
-            case 'QUARTER': return 'weekly';
+            case 'MONTH':   return 'weekly';
+            case 'QUARTER': return 'monthly';
             case 'YEAR':    return 'monthly';
-            default:        return 'daily';
+            default:        return '';
         }
     }
 

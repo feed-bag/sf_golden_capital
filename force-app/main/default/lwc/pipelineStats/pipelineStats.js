@@ -154,7 +154,7 @@ export default class PipelineStats extends LightningElement {
                 key: 'approved',
                 label: `App → Approved (${this.periodLabel})`,
                 value: `${approvePct.toFixed(1)}%`,
-                subtext: `${k.cohortApproved || 0} of ${created}`,
+                subtext: `${k.cohortApproved || 0} approved / ${created} new`,
                 hasDelta: true,
                 ...v(approvePct, approvePctPrev)
             },
@@ -162,7 +162,7 @@ export default class PipelineStats extends LightningElement {
                 key: 'funded',
                 label: `App → Funded (${this.periodLabel})`,
                 value: `${fundedPct.toFixed(1)}%`,
-                subtext: `${k.cohortFunded || 0} of ${created}`,
+                subtext: `${k.cohortFunded || 0} funded / ${created} new`,
                 hasDelta: true,
                 ...v(fundedPct, fundedPctPrev)
             }

@@ -141,13 +141,14 @@ public with sharing class OpportunityDashboardController {
             filter  = 'CreatedDate >= :curStart AND CreatedDate <= :curEnd';
             orderBy = 'CreatedDate DESC';
         } else if (kpiKey == 'approved') {
-            // Cohort: created in the period AND ever reached Approved.
-            filter  = 'CreatedDate >= :curStart AND CreatedDate <= :curEnd AND Has_Been_Approved__c = true';
-            orderBy = 'CreatedDate DESC';
+            // Pace: opps that received an Approval child record during the period.
+            filter  = 'Id IN (SELECT Opportunity__c FROM Approval__c ' +
+                      'WHERE CreatedDate >= :curStart AND CreatedDate <= :curEnd)';
+            orderBy = 'LastModifiedDate DESC';
         } else if (kpiKey == 'funded') {
-            // Cohort: created in the period AND ever funded (Funded_Date__c populated).
-            filter  = 'CreatedDate >= :curStart AND CreatedDate <= :curEnd AND Funded_Date__c != null';
-            orderBy = 'CreatedDate DESC';
+            // Pace: opps funded in the period (Funded_Date__c falls in the window).
+            filter  = 'Funded_Date__c >= :curStart AND Funded_Date__c <= :curEnd';
+            orderBy = 'Funded_Date__c DESC';
         } else {
             // volume / deals / avg → opps funded in the period
             filter  = 'Funded_Date__c >= :curStart AND Funded_Date__c <= :curEnd';
@@ -238,31 +239,22 @@ public with sharing class OpportunityDashboardController {
             'WHERE CreatedDate >= :prevStart AND CreatedDate <= :prevEnd' + ownerClause(ownerId),
             binds, AccessLevel.USER_MODE
         );
-        // Cohort conversion: of opps CREATED in the period, how many ever reached Approved / Funded.
+        // Pace ratios: count of approval/funding events in the period (independent of when the
+        // parent opp was created), used as numerator over period-created for the App→X ratios.
+        // Approval events come from Approval__c child records; the moment one is created marks
+        // when the opp first reached approval.
+        String approvalOwnerClause = ownerId == null ? '' : ' AND Opportunity__r.OwnerId = :ownerId ';
         AggregateResult[] curApproved = Database.queryWithBinds(
-            'SELECT COUNT(Id) cnt FROM Opportunity ' +
-            'WHERE CreatedDate >= :curStart AND CreatedDate <= :curEnd ' +
-            'AND Has_Been_Approved__c = true' + ownerClause(ownerId),
+            'SELECT COUNT_DISTINCT(Opportunity__c) cnt FROM Approval__c ' +
+            'WHERE CreatedDate >= :curStart AND CreatedDate <= :curEnd' + approvalOwnerClause,
             binds, AccessLevel.USER_MODE
         );
         AggregateResult[] prevApproved = Database.queryWithBinds(
-            'SELECT COUNT(Id) cnt FROM Opportunity ' +
-            'WHERE CreatedDate >= :prevStart AND CreatedDate <= :prevEnd ' +
-            'AND Has_Been_Approved__c = true' + ownerClause(ownerId),
+            'SELECT COUNT_DISTINCT(Opportunity__c) cnt FROM Approval__c ' +
+            'WHERE CreatedDate >= :prevStart AND CreatedDate <= :prevEnd' + approvalOwnerClause,
             binds, AccessLevel.USER_MODE
         );
-        AggregateResult[] curCohortFunded = Database.queryWithBinds(
-            'SELECT COUNT(Id) cnt FROM Opportunity ' +
-            'WHERE CreatedDate >= :curStart AND CreatedDate <= :curEnd ' +
-            'AND Funded_Date__c != null' + ownerClause(ownerId),
-            binds, AccessLevel.USER_MODE
-        );
-        AggregateResult[] prevCohortFunded = Database.queryWithBinds(
-            'SELECT COUNT(Id) cnt FROM Opportunity ' +
-            'WHERE CreatedDate >= :prevStart AND CreatedDate <= :prevEnd ' +
-            'AND Funded_Date__c != null' + ownerClause(ownerId),
-            binds, AccessLevel.USER_MODE
-        );
+        // Funded-in-period is the same population already counted as dealsFunded above; reuse it.
 
         k.volumeFunded     = decOrZero(curFunded[0],  'total');
         k.volumeFundedPrev = decOrZero(prevFunded[0], 'total');
@@ -273,11 +265,12 @@ public with sharing class OpportunityDashboardController {
         k.avgDealSize     = (k.dealsFunded     > 0) ? (k.volumeFunded     / k.dealsFunded)     : 0;
         k.avgDealSizePrev = (k.dealsFundedPrev > 0) ? (k.volumeFundedPrev / k.dealsFundedPrev) : 0;
 
-        // Cohort conversion counts (numerators); ratios are computed in the LWC against newOpportunities.
+        // Pace numerators (independent populations counted in the period); ratios computed in the LWC
+        // against newOpportunities. Funded-in-period reuses the dealsFunded count above.
         k.cohortApproved     = intOrZero(curApproved[0],  'cnt');
         k.cohortApprovedPrev = intOrZero(prevApproved[0], 'cnt');
-        k.cohortFunded       = intOrZero(curCohortFunded[0],  'cnt');
-        k.cohortFundedPrev   = intOrZero(prevCohortFunded[0], 'cnt');
+        k.cohortFunded       = k.dealsFunded;
+        k.cohortFundedPrev   = k.dealsFundedPrev;
 
         return k;
     }

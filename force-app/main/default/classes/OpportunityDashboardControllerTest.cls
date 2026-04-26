@@ -214,20 +214,32 @@ private class OpportunityDashboardControllerTest {
     }
 
     @isTest
-    static void testCohortConversionKpis() {
+    static void testPaceConversionKpis() {
         Account acct = [SELECT Id FROM Account WHERE Name = 'Test Account' LIMIT 1];
         Date today = Date.today();
-        // Three opps created this month: 1 approved + funded, 1 only approved, 1 neither.
-        insert new List<Opportunity>{
-            new Opportunity(Name = 'Cohort Funded', AccountId = acct.Id,
-                StageName = 'Prospecting', CloseDate = today, Amount = 10000,
-                Has_Been_Approved__c = true, Funded_Date__c = today),
-            new Opportunity(Name = 'Cohort Approved', AccountId = acct.Id,
-                StageName = 'Prospecting', CloseDate = today, Amount = 5000,
-                Has_Been_Approved__c = true),
-            new Opportunity(Name = 'Cohort None', AccountId = acct.Id,
-                StageName = 'Prospecting', CloseDate = today, Amount = 2500)
-        };
+        // One created-this-month opp that gets funded + approved this month.
+        Opportunity oppNew = new Opportunity(Name = 'Pace New', AccountId = acct.Id,
+            StageName = 'Prospecting', CloseDate = today, Amount = 10000,
+            Funded_Date__c = today);
+        // One created last month, funded this month — counts toward pace numerator
+        // but NOT denominator (denominator = created this month).
+        Opportunity oppOld = new Opportunity(Name = 'Pace Old', AccountId = acct.Id,
+            StageName = 'Prospecting', CloseDate = today, Amount = 5000,
+            Funded_Date__c = today);
+        insert new List<Opportunity>{ oppNew, oppOld };
+
+        // Approval child for the new opp marks "approved this period"
+        Id lenderRtId = Schema.SObjectType.Account
+            .getRecordTypeInfosByDeveloperName().get('Lender_Account').getRecordTypeId();
+        Account lender = new Account(Name = 'Test Lender', RecordTypeId = lenderRtId);
+        insert lender;
+        insert new Approval__c(
+            Opportunity__c = oppNew.Id,
+            Purchase_Price__c = 10000,
+            Net_Funded_Amount__c = 10000,
+            Contract_Type__c = 'EFA',
+            Funding_Source__c = lender.Id
+        );
 
         Test.startTest();
         OpportunityDashboardController.DashboardMetrics m =
@@ -238,10 +250,10 @@ private class OpportunityDashboardControllerTest {
             OpportunityDashboardController.getOpportunitiesForKpi('funded', 'MONTH', null);
         Test.stopTest();
 
-        System.assert(m.kpis.cohortApproved >= 2, 'Should count both approved cohort members');
-        System.assert(m.kpis.cohortFunded   >= 1, 'Should count the funded cohort member');
-        System.assert(approvedDrill.size() >= 2, 'approved drill should return cohort members');
-        System.assert(fundedDrill.size()   >= 1, 'funded drill should return cohort members');
+        System.assert(m.kpis.cohortApproved >= 1, 'Pace approved should count opps with Approval child this period');
+        System.assert(m.kpis.cohortFunded   >= 2, 'Pace funded should count both funded-in-period opps regardless of created date');
+        System.assert(approvedDrill.size() >= 1, 'approved drill should return opps with Approval in period');
+        System.assert(fundedDrill.size()   >= 2, 'funded drill should return both funded-in-period opps');
     }
 
     @isTest

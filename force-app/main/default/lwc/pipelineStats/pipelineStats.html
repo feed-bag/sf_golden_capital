@@ -37,7 +37,12 @@
         <template if:true={hasMetrics}>
             <section class="ps-kpi-row">
                 <template for:each={kpiTiles} for:item="tile">
-                    <div key={tile.key} class="ps-kpi">
+                    <button key={tile.key}
+                            class="ps-kpi"
+                            data-key={tile.key}
+                            onclick={handleKpiClick}
+                            type="button"
+                            title="Click to view records">
                         <div class="ps-kpi-label">{tile.label}</div>
                         <div class="ps-kpi-value">{tile.value}</div>
                         <template if:true={tile.hasDelta}>
@@ -46,7 +51,7 @@
                                 <span class="ps-delta-suffix"> vs prev period</span>
                             </div>
                         </template>
-                    </div>
+                    </button>
                 </template>
             </section>
 
@@ -136,6 +141,67 @@
                     </article>
                 </template>
             </section>
+        </template>
+
+        <template if:true={drillOpen}>
+            <div class="ps-modal-backdrop" onclick={handleDrillBackdropClick}>
+                <div class="ps-modal" role="dialog" aria-modal="true">
+                    <header class="ps-modal-header">
+                        <div>
+                            <h2 class="ps-modal-title">{drillTitle}</h2>
+                            <span class="ps-modal-sub">{drillCountLabel}</span>
+                        </div>
+                        <button class="ps-modal-close"
+                                type="button"
+                                onclick={handleDrillClose}
+                                title="Close">×</button>
+                    </header>
+                    <div class="ps-modal-body">
+                        <template if:true={drillError}>
+                            <p class="ps-error">{drillError}</p>
+                        </template>
+                        <template if:true={drillLoading}>
+                            <p class="ps-modal-loading">Loading…</p>
+                        </template>
+                        <template if:false={drillLoading}>
+                            <table class="ps-drill-table">
+                                <thead>
+                                    <tr>
+                                        <th>Opportunity</th>
+                                        <th>Unique ID</th>
+                                        <th>Stage</th>
+                                        <th>Owner</th>
+                                        <th class="ps-num">Amount</th>
+                                        <template if:true={drillShowFundedCol}>
+                                            <th>Funded</th>
+                                        </template>
+                                        <template if:true={drillShowCreatedCol}>
+                                            <th>Created</th>
+                                        </template>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <template for:each={drillRows} for:item="row">
+                                        <tr key={row.id}>
+                                            <td><a href={row.url} target="_top" class="ps-drill-link">{row.name}</a></td>
+                                            <td class="ps-mono">{row.uniqueId}</td>
+                                            <td>{row.stage}</td>
+                                            <td>{row.owner}</td>
+                                            <td class="ps-num">{row.amountText}</td>
+                                            <template if:true={drillShowFundedCol}>
+                                                <td class="ps-mono">{row.fundedDate}</td>
+                                            </template>
+                                            <template if:true={drillShowCreatedCol}>
+                                                <td class="ps-mono">{row.createdDate}</td>
+                                            </template>
+                                        </tr>
+                                    </template>
+                                </tbody>
+                            </table>
+                        </template>
+                    </div>
+                </div>
+            </div>
         </template>
     </article>
 </template>

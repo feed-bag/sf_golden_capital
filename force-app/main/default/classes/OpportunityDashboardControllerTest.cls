@@ -214,6 +214,26 @@ private class OpportunityDashboardControllerTest {
     }
 
     @isTest
+    static void testGetOpportunitiesForKpi() {
+        Account acct = [SELECT Id FROM Account WHERE Name = 'Test Account' LIMIT 1];
+        insert new Opportunity(
+            Name = 'Drill Funded', AccountId = acct.Id,
+            StageName = 'Prospecting', CloseDate = Date.today(),
+            Amount = 12345, Funded_Date__c = Date.today()
+        );
+
+        Test.startTest();
+        List<Opportunity> volumeRows  = OpportunityDashboardController.getOpportunitiesForKpi('volume',   'MONTH', null);
+        List<Opportunity> newRows     = OpportunityDashboardController.getOpportunitiesForKpi('new',      'MONTH', null);
+        List<Opportunity> pipelineRows= OpportunityDashboardController.getOpportunitiesForKpi('pipeline', 'MONTH', null);
+        Test.stopTest();
+
+        System.assert(volumeRows.size()  >= 1, 'volume KPI should return funded opps in window');
+        System.assert(newRows.size()     >= 1, 'new KPI should return opps created in window');
+        System.assert(pipelineRows.size() >= 1, 'pipeline KPI should return open opps');
+    }
+
+    @isTest
     static void testGetDealersForOpportunityNoEquipment() {
         Account acct = [SELECT Id FROM Account WHERE Name = 'Test Account' LIMIT 1];
         Opportunity opp = new Opportunity(

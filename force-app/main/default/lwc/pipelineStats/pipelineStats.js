@@ -2,6 +2,7 @@ import { LightningElement, wire, track } from 'lwc';
 import { refreshApex } from '@salesforce/apex';
 import getDashboardMetrics from '@salesforce/apex/OpportunityDashboardController.getDashboardMetrics';
 import getActiveUsers from '@salesforce/apex/OpportunityDashboardController.getActiveUsers';
+import getOpportunitiesForKpi from '@salesforce/apex/OpportunityDashboardController.getOpportunitiesForKpi';
 import bannerUrl from '@salesforce/resourceUrl/golden_cap_banner';
 
 const RANGE_OPTIONS = [
@@ -43,6 +44,12 @@ export default class PipelineStats extends LightningElement {
     metrics;
     error;
     wiredMetrics;
+
+    @track drillKey = null;
+    @track drillTitle = '';
+    @track drillRows = [];
+    @track drillLoading = false;
+    @track drillError = null;
 
     @wire(getActiveUsers)
     wiredUsers({ data }) {
@@ -211,6 +218,74 @@ export default class PipelineStats extends LightningElement {
                     barStyle: `width:${pct.toFixed(2)}%;`
                 };
             });
+    }
+
+    handleKpiClick(event) {
+        const key = event.currentTarget.dataset.key;
+        if (!key) return;
+        const tile = this.kpiTiles.find(t => t.key === key);
+        this.drillKey = key;
+        this.drillTitle = tile ? tile.label : 'Records';
+        this.drillRows = [];
+        this.drillError = null;
+        this.drillLoading = true;
+        getOpportunitiesForKpi({
+            kpiKey: key,
+            timeRange: this.timeRange,
+            ownerId: this.ownerId
+        })
+            .then(data => {
+                this.drillRows = (data || []).map(o => ({
+                    id: o.Id,
+                    url: '/' + o.Id,
+                    name: o.Account ? o.Account.Name : (o.Name || '—'),
+                    uniqueId: o.Unique_ID__c || '',
+                    stage: o.StageName || '',
+                    owner: o.Owner ? o.Owner.Name : '',
+                    amountText: o.Amount
+                        ? CURRENCY_FULL.format(Number(o.Amount))
+                        : '—',
+                    fundedDate: o.Funded_Date__c || '',
+                    createdDate: o.CreatedDate ? o.CreatedDate.substring(0, 10) : ''
+                }));
+                this.drillLoading = false;
+            })
+            .catch(err => {
+                this.drillError = err && err.body ? err.body.message : 'Could not load records.';
+                this.drillLoading = false;
+            });
+    }
+
+    handleDrillClose() {
+        this.drillKey = null;
+        this.drillRows = [];
+        this.drillError = null;
+    }
+
+    handleDrillBackdropClick(event) {
+        if (event.target.classList.contains('ps-modal-backdrop')) {
+            this.handleDrillClose();
+        }
+    }
+
+    get drillOpen() {
+        return this.drillKey !== null;
+    }
+
+    get drillCountLabel() {
+        if (this.drillLoading) return 'Loading…';
+        const n = this.drillRows.length;
+        if (n === 0) return 'No records';
+        if (n >= 200) return '200+ records (capped)';
+        return `${n} record${n === 1 ? '' : 's'}`;
+    }
+
+    get drillShowFundedCol() {
+        return this.drillKey === 'volume' || this.drillKey === 'deals' || this.drillKey === 'avg';
+    }
+
+    get drillShowCreatedCol() {
+        return this.drillKey === 'new';
     }
 
     get hasTopOwners() {

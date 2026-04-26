@@ -124,6 +124,35 @@ public with sharing class OpportunityDashboardController {
         return m;
     }
 
+    // KPI tile drill-down. Returns up to 200 opps behind a given tile, respecting the same
+    // time range + owner filter the dashboard is currently using.
+    @AuraEnabled(cacheable=true)
+    public static List<Opportunity> getOpportunitiesForKpi(String kpiKey, String timeRange, Id ownerId) {
+        Period cur = resolvePeriod(timeRange == null ? 'MONTH' : timeRange.toUpperCase(), 0);
+        String filter;
+        String orderBy;
+        Map<String, Object> binds = new Map<String, Object>{
+            'curStart' => cur.startDate, 'curEnd' => cur.endDate, 'ownerId' => ownerId
+        };
+        if (kpiKey == 'pipeline') {
+            filter  = 'IsClosed = false';
+            orderBy = 'Amount DESC NULLS LAST';
+        } else if (kpiKey == 'new') {
+            filter  = 'CreatedDate >= :curStart AND CreatedDate <= :curEnd';
+            orderBy = 'CreatedDate DESC';
+        } else {
+            // volume / deals / avg → opps funded in the period
+            filter  = 'Funded_Date__c >= :curStart AND Funded_Date__c <= :curEnd';
+            orderBy = 'Funded_Date__c DESC NULLS LAST, Amount DESC NULLS LAST';
+        }
+        String soql =
+            'SELECT Id, Name, StageName, Amount, OwnerId, Owner.Name, Account.Name, ' +
+            '       Unique_ID__c, CloseDate, CreatedDate, Funded_Date__c ' +
+            'FROM Opportunity WHERE ' + filter + ownerClause(ownerId) +
+            ' ORDER BY ' + orderBy + ' LIMIT 200';
+        return Database.queryWithBinds(soql, binds, AccessLevel.USER_MODE);
+    }
+
     // Period boundaries. offset = 0 → current period; -1 → immediately preceding period of same length.
     private static Period resolvePeriod(String range, Integer offset) {
         Date today = Date.today();

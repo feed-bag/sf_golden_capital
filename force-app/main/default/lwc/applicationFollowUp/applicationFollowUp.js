@@ -1,4 +1,4 @@
-import { LightningElement, api, track } from 'lwc';
+import { LightningElement, api, wire, track } from 'lwc';
 import { CloseActionScreenEvent } from 'lightning/actions';
 import { ShowToastEvent } from 'lightning/platformShowToastEvent';
 import getApplicationFollowUpData from '@salesforce/apex/EmailFollowUpController.getApplicationFollowUpData';
@@ -14,19 +14,22 @@ export default class ApplicationFollowUp extends LightningElement {
     @track subject = '';
     @track htmlBody = '';
 
-    connectedCallback() {
-        getApplicationFollowUpData({ oppId: this.recordId })
-            .then(d => {
-                this.data    = d;
-                this.toEmail = d.toEmail || '';
-                this.subject = d.subject || '';
-                this.htmlBody = d.htmlBody || '';
-                this.loading = false;
-            })
-            .catch(err => {
-                this.error = (err && err.body && err.body.message) || 'Could not load data.';
-                this.loading = false;
-            });
+    // Wire fires only when recordId is populated by the Quick Action framework,
+    // so we avoid the race where connectedCallback runs before @api recordId is set.
+    @wire(getApplicationFollowUpData, { oppId: '$recordId' })
+    wired({ data, error }) {
+        if (!this.recordId) return;
+        if (data) {
+            this.data    = data;
+            this.toEmail = data.toEmail || '';
+            this.subject = data.subject || '';
+            this.htmlBody = data.htmlBody || '';
+            this.error   = undefined;
+            this.loading = false;
+        } else if (error) {
+            this.error = (error && error.body && error.body.message) || 'Could not load data.';
+            this.loading = false;
+        }
     }
 
     handleToChange(e)      { this.toEmail  = e.target.value; }

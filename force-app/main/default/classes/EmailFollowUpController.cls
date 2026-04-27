@@ -10,14 +10,23 @@ public with sharing class EmailFollowUpController {
     public static FollowUpData getApplicationFollowUpData(Id oppId) {
         FollowUpData out = new FollowUpData();
 
-        Opportunity opp = [
-            SELECT Id, Name, AccountId, Account.Name, Account.Email__c
+        if (oppId == null) {
+            throw new AuraHandledException('Opportunity Id was not provided.');
+        }
+
+        List<Opportunity> opps = [
+            SELECT Id, Name, AccountId
             FROM Opportunity
             WHERE Id = :oppId
             LIMIT 1
         ];
+        if (opps.isEmpty()) {
+            throw new AuraHandledException('Opportunity not found or not accessible to your user.');
+        }
+        Opportunity opp = opps[0];
 
         // Primary contact via standard OpportunityContactRole; fall back to Account.Email__c.
+        // Account is queried separately so a sharing/FLS gap on Account doesn't drop the parent opp row.
         List<OpportunityContactRole> primary = [
             SELECT ContactId, Contact.Name, Contact.Email
             FROM OpportunityContactRole
@@ -28,10 +37,19 @@ public with sharing class EmailFollowUpController {
             out.toName  = primary[0].Contact.Name;
             out.toEmail = primary[0].Contact.Email;
             out.toSource = 'Primary contact role';
-        } else if (opp.AccountId != null && String.isNotBlank(opp.Account.Email__c)) {
-            out.toName  = opp.Account.Name;
-            out.toEmail = opp.Account.Email__c;
-            out.toSource = 'Account email (no primary contact)';
+        } else if (opp.AccountId != null) {
+            List<Account> accts = [
+                SELECT Name, Email__c FROM Account WHERE Id = :opp.AccountId LIMIT 1
+            ];
+            if (!accts.isEmpty() && String.isNotBlank(accts[0].Email__c)) {
+                out.toName   = accts[0].Name;
+                out.toEmail  = accts[0].Email__c;
+                out.toSource = 'Account email (no primary contact)';
+            } else {
+                out.toName   = '';
+                out.toEmail  = '';
+                out.toSource = 'No recipient found — please enter manually';
+            }
         } else {
             out.toName  = '';
             out.toEmail = '';

@@ -169,7 +169,7 @@
         <object>Opportunity</object>
         <outputAssignments>
             <assignToReference>varOppEquipmentCost</assignToReference>
-            <field>Total_Equipment_Cost__c</field>
+            <field>Amount</field>
         </outputAssignments>
         <outputAssignments>
             <assignToReference>varOppType</assignToReference>

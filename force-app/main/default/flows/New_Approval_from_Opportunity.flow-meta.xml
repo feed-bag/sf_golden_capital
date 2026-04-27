@@ -338,7 +338,7 @@
             <name>inp_PurchasePrice</name>
             <dataType>Currency</dataType>
             <defaultValue>
-                <elementReference>Get_Opportunity.Total_Equipment_Cost__c</elementReference>
+                <elementReference>Get_Opportunity.Amount</elementReference>
             </defaultValue>
             <fieldText>Purchase Price</fieldText>
             <fieldType>InputField</fieldType>

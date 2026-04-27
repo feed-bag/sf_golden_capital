@@ -335,109 +335,134 @@
             <targetReference>Create_Approval</targetReference>
         </connector>
         <fields>
-            <name>inp_PurchasePrice</name>
-            <dataType>Currency</dataType>
-            <defaultValue>
-                <elementReference>Get_Opportunity.Amount</elementReference>
-            </defaultValue>
-            <fieldText>Purchase Price</fieldText>
-            <fieldType>InputField</fieldType>
-            <scale>2</scale>
-        </fields>
-        <fields>
-            <name>inp_ContractType</name>
-            <choiceReferences>choiceContractType</choiceReferences>
-            <dataType>String</dataType>
-            <fieldText>Contract Type</fieldText>
-            <fieldType>DropdownBox</fieldType>
-            <isRequired>false</isRequired>
-        </fields>
-        <fields>
-            <name>inp_NetFundedAmount</name>
-            <dataType>Currency</dataType>
-            <fieldText>Net Funded Amount</fieldText>
-            <fieldType>InputField</fieldType>
-            <isRequired>false</isRequired>
-            <scale>2</scale>
-        </fields>
-        <fields>
-            <name>inp_DownPayment</name>
-            <dataType>Currency</dataType>
-            <fieldText>Down Payment</fieldText>
-            <fieldType>InputField</fieldType>
-            <isRequired>false</isRequired>
-            <scale>2</scale>
-        </fields>
-        <fields>
-            <name>inp_TermLength</name>
-            <dataType>Number</dataType>
-            <fieldText>Term Length (months)</fieldText>
-            <fieldType>InputField</fieldType>
-            <isRequired>false</isRequired>
-            <scale>0</scale>
-        </fields>
-        <fields>
-            <name>inp_PeriodicPayment</name>
-            <dataType>Currency</dataType>
-            <fieldText>Periodic Payment</fieldText>
-            <fieldType>InputField</fieldType>
-            <isRequired>false</isRequired>
-            <scale>2</scale>
-        </fields>
-        <fields>
-            <name>inp_PaymentFrequency</name>
-            <choiceReferences>choicePaymentFrequency</choiceReferences>
-            <dataType>String</dataType>
-            <fieldText>Payment Frequency</fieldText>
-            <fieldType>DropdownBox</fieldType>
-            <isRequired>false</isRequired>
-        </fields>
-        <fields>
-            <name>inp_Points</name>
-            <dataType>Number</dataType>
-            <fieldText>Points (%)</fieldText>
-            <fieldType>InputField</fieldType>
-            <isRequired>false</isRequired>
-            <scale>2</scale>
-        </fields>
-        <fields>
-            <name>inp_DocFee</name>
-            <dataType>Currency</dataType>
-            <fieldText>Doc Fee</fieldText>
-            <fieldType>InputField</fieldType>
-            <isRequired>false</isRequired>
-            <scale>2</scale>
-        </fields>
-        <fields>
-            <name>inp_TitleFee</name>
-            <dataType>Currency</dataType>
-            <fieldText>Title Fee</fieldText>
-            <fieldType>InputField</fieldType>
-            <isRequired>false</isRequired>
-            <scale>2</scale>
-        </fields>
-        <fields>
-            <name>inp_BrokerFeeRevenue</name>
-            <dataType>Currency</dataType>
-            <fieldText>Broker Fee Revenue</fieldText>
-            <fieldType>InputField</fieldType>
-            <isRequired>false</isRequired>
-            <scale>2</scale>
-        </fields>
-        <fields>
-            <name>inp_Status</name>
-            <choiceReferences>choiceStatus</choiceReferences>
-            <dataType>String</dataType>
-            <fieldText>Status</fieldText>
-            <fieldType>DropdownBox</fieldType>
-            <isRequired>false</isRequired>
-        </fields>
-        <fields>
-            <name>inp_Expiration</name>
-            <dataType>Date</dataType>
-            <fieldText>Expiration</fieldText>
-            <fieldType>InputField</fieldType>
-            <isRequired>false</isRequired>
+            <name>NewApprovalSection</name>
+            <fieldType>RegionContainer</fieldType>
+            <regionContainerType>SectionWithoutHeader</regionContainerType>
+            <fields>
+                <name>NewApprovalSection_Column1</name>
+                <fieldType>Region</fieldType>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>6</stringValue>
+                    </value>
+                </inputParameters>
+                <fields>
+                    <name>inp_PurchasePrice</name>
+                    <dataType>Currency</dataType>
+                    <defaultValue>
+                        <elementReference>Get_Opportunity.Amount</elementReference>
+                    </defaultValue>
+                    <fieldText>Purchase Price</fieldText>
+                    <fieldType>InputField</fieldType>
+                    <scale>2</scale>
+                </fields>
+                <fields>
+                    <name>inp_NetFundedAmount</name>
+                    <dataType>Currency</dataType>
+                    <fieldText>Net Funded Amount</fieldText>
+                    <fieldType>InputField</fieldType>
+                    <isRequired>false</isRequired>
+                    <scale>2</scale>
+                </fields>
+                <fields>
+                    <name>inp_DownPayment</name>
+                    <dataType>Currency</dataType>
+                    <fieldText>Down Payment</fieldText>
+                    <fieldType>InputField</fieldType>
+                    <isRequired>false</isRequired>
+                    <scale>2</scale>
+                </fields>
+                <fields>
+                    <name>inp_DocFee</name>
+                    <dataType>Currency</dataType>
+                    <fieldText>Doc Fee</fieldText>
+                    <fieldType>InputField</fieldType>
+                    <isRequired>false</isRequired>
+                    <scale>2</scale>
+                </fields>
+                <fields>
+                    <name>inp_TitleFee</name>
+                    <dataType>Currency</dataType>
+                    <fieldText>Title Fee</fieldText>
+                    <fieldType>InputField</fieldType>
+                    <isRequired>false</isRequired>
+                    <scale>2</scale>
+                </fields>
+                <fields>
+                    <name>inp_BrokerFeeRevenue</name>
+                    <dataType>Currency</dataType>
+                    <fieldText>Broker Fee Revenue</fieldText>
+                    <fieldType>InputField</fieldType>
+                    <isRequired>false</isRequired>
+                    <scale>2</scale>
+                </fields>
+                <fields>
+                    <name>inp_Status</name>
+                    <choiceReferences>choiceStatus</choiceReferences>
+                    <dataType>String</dataType>
+                    <fieldText>Status</fieldText>
+                    <fieldType>DropdownBox</fieldType>
+                    <isRequired>false</isRequired>
+                </fields>
+            </fields>
+            <fields>
+                <name>NewApprovalSection_Column2</name>
+                <fieldType>Region</fieldType>
+                <inputParameters>
+                    <name>width</name>
+                    <value>
+                        <stringValue>6</stringValue>
+                    </value>
+                </inputParameters>
+                <fields>
+                    <name>inp_ContractType</name>
+                    <choiceReferences>choiceContractType</choiceReferences>
+                    <dataType>String</dataType>
+                    <fieldText>Contract Type</fieldText>
+                    <fieldType>DropdownBox</fieldType>
+                    <isRequired>false</isRequired>
+                </fields>
+                <fields>
+                    <name>inp_TermLength</name>
+                    <dataType>Number</dataType>
+                    <fieldText>Term Length (months)</fieldText>
+                    <fieldType>InputField</fieldType>
+                    <isRequired>false</isRequired>
+                    <scale>0</scale>
+                </fields>
+                <fields>
+                    <name>inp_PeriodicPayment</name>
+                    <dataType>Currency</dataType>
+                    <fieldText>Periodic Payment</fieldText>
+                    <fieldType>InputField</fieldType>
+                    <isRequired>false</isRequired>
+                    <scale>2</scale>
+                </fields>
+                <fields>
+                    <name>inp_PaymentFrequency</name>
+                    <choiceReferences>choicePaymentFrequency</choiceReferences>
+                    <dataType>String</dataType>
+                    <fieldText>Payment Frequency</fieldText>
+                    <fieldType>DropdownBox</fieldType>
+                    <isRequired>false</isRequired>
+                </fields>
+                <fields>
+                    <name>inp_Points</name>
+                    <dataType>Number</dataType>
+                    <fieldText>Points (%)</fieldText>
+                    <fieldType>InputField</fieldType>
+                    <isRequired>false</isRequired>
+                    <scale>2</scale>
+                </fields>
+                <fields>
+                    <name>inp_Expiration</name>
+                    <dataType>Date</dataType>
+                    <fieldText>Expiration</fieldText>
+                    <fieldType>InputField</fieldType>
+                    <isRequired>false</isRequired>
+                </fields>
+            </fields>
         </fields>
         <fields>
             <name>inp_Notes</name>

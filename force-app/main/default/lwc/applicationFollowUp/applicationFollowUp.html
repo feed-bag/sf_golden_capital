@@ -9,6 +9,7 @@
                 <div class="afu-error">{error}</div>
             </template>
 
+            <template if:true={data}>
             <div class="afu-meta">
                 <div class="afu-meta-row">
                     <span class="afu-meta-label">From</span>
@@ -53,6 +54,7 @@
                     disabled={sending}>
                 </lightning-button>
             </div>
+            </template>
         </template>
     </div>
 </template>

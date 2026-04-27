@@ -7,7 +7,7 @@
                     <name>actionNames</name>
                     <valueList>
                         <valueListItems>
-                            <value>Opportunity.Create_Approval</value>
+                            <value>Opportunity.New_Approval</value>
                         </valueListItems>
                         <valueListItems>
                             <value>Opportunity.Application_Follow_Up</value>

@@ -1,0 +1,33 @@
+.afu-shell {
+    display: flex; flex-direction: column; gap: 0.6rem;
+    padding: 0.5rem 0.25rem;
+}
+.afu-meta {
+    background: #f4f6f9; border: 1px solid #d8dde6;
+    border-radius: 0.25rem; padding: 0.45rem 0.6rem;
+    display: flex; flex-direction: column; gap: 0.15rem;
+}
+.afu-meta-row { display: flex; align-items: baseline; gap: 0.5rem; font-size: 0.8rem; }
+.afu-meta-label {
+    color: #3e3e3c; font-weight: 700; min-width: 130px;
+    text-transform: uppercase; font-size: 0.7rem; letter-spacing: 0.04em;
+}
+.afu-meta-value { color: #16325c; font-weight: 600; }
+.afu-meta-sub   { color: #706e6b; font-style: italic; font-size: 0.78rem; }
+
+.afu-rt-label {
+    font-size: 0.75rem; color: #3e3e3c; font-weight: 600;
+    margin-top: 0.25rem;
+}
+.afu-body { display: block; min-height: 320px; }
+
+.afu-error {
+    background: #fdecea; color: #c23934;
+    border: 1px solid #f6b8b8; border-radius: 0.25rem;
+    padding: 0.5rem 0.75rem; font-size: 0.8rem;
+}
+
+.afu-actions {
+    display: flex; justify-content: flex-end; gap: 0.5rem;
+    margin-top: 0.4rem;
+}

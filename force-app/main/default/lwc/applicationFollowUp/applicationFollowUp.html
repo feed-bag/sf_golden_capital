@@ -1,0 +1,58 @@
+<template>
+    <div class="afu-shell">
+        <template if:true={loading}>
+            <lightning-spinner alternative-text="Loading"></lightning-spinner>
+        </template>
+
+        <template if:false={loading}>
+            <template if:true={error}>
+                <div class="afu-error">{error}</div>
+            </template>
+
+            <div class="afu-meta">
+                <div class="afu-meta-row">
+                    <span class="afu-meta-label">From</span>
+                    <span class="afu-meta-value">{data.fromAddress}</span>
+                </div>
+                <template if:true={data.toSource}>
+                    <div class="afu-meta-row">
+                        <span class="afu-meta-label">Recipient source</span>
+                        <span class="afu-meta-sub">{data.toSource}</span>
+                    </div>
+                </template>
+            </div>
+
+            <lightning-input
+                label="To"
+                type="email"
+                value={toEmail}
+                onchange={handleToChange}
+                required>
+            </lightning-input>
+
+            <lightning-input
+                label="Subject"
+                value={subject}
+                onchange={handleSubjectChange}>
+            </lightning-input>
+
+            <label class="afu-rt-label">Body (edit before sending)</label>
+            <lightning-input-rich-text
+                value={htmlBody}
+                onchange={handleBodyChange}
+                disabled-categories="FORMAT_FONT"
+                class="afu-body">
+            </lightning-input-rich-text>
+
+            <div class="afu-actions">
+                <lightning-button label="Cancel" onclick={handleCancel}></lightning-button>
+                <lightning-button
+                    variant="brand"
+                    label="Send"
+                    onclick={handleSend}
+                    disabled={sending}>
+                </lightning-button>
+            </div>
+        </template>
+    </div>
+</template>

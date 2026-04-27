@@ -10,6 +10,9 @@
                             <value>Opportunity.Create_Approval</value>
                         </valueListItems>
                         <valueListItems>
+                            <value>Opportunity.Application_Follow_Up</value>
+                        </valueListItems>
+                        <valueListItems>
                             <value>Edit</value>
                         </valueListItems>
                         <valueListItems>

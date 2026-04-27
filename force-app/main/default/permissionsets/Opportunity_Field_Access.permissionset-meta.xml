@@ -8,6 +8,10 @@
         <apexClass>OpportunityDashboardController</apexClass>
         <enabled>true</enabled>
     </classAccesses>
+    <classAccesses>
+        <apexClass>EmailFollowUpController</apexClass>
+        <enabled>true</enabled>
+    </classAccesses>
     <description>Grants read/edit access to all custom Opportunity fields for all users.</description>
     <fieldPermissions>
         <editable>false</editable>

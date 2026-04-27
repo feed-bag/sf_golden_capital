@@ -81,10 +81,13 @@ public with sharing class EmailFollowUpController {
             );
         }
 
+        // Editor passes a body fragment; wrap it in a minimal HTML envelope for email clients.
+        String wrappedBody = '<html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"></head><body>'
+                           + htmlBody + '</body></html>';
         Messaging.SingleEmailMessage msg = new Messaging.SingleEmailMessage();
         msg.setToAddresses(new List<String>{ toEmail });
         msg.setSubject(subject);
-        msg.setHtmlBody(htmlBody);
+        msg.setHtmlBody(wrappedBody);
         msg.setOrgWideEmailAddressId(owe[0].Id);
         msg.setWhatId(oppId);
         msg.setSaveAsActivity(true);

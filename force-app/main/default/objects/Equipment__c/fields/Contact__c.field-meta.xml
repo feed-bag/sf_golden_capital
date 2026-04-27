@@ -2,7 +2,17 @@
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Contact__c</fullName>
     <deleteConstraint>SetNull</deleteConstraint>
-    <label>Contact</label>
+    <label>Dealer Representative</label>
+    <lookupFilter>
+        <active>true</active>
+        <errorMessage>Dealer Representative must be a contact tied to the Dealer on this Equipment record.</errorMessage>
+        <filterItems>
+            <field>Contact.AccountId</field>
+            <operation>equals</operation>
+            <valueField>$Source.Dealer__c</valueField>
+        </filterItems>
+        <isOptional>false</isOptional>
+    </lookupFilter>
     <referenceTo>Contact</referenceTo>
     <relationshipLabel>Equipment</relationshipLabel>
     <relationshipName>Equipment</relationshipName>

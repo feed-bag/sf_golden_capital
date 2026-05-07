@@ -62,3 +62,7 @@ remap_ids.py
 
 # Claude local config
 .claude/
+
+# Supabase CLI local state
+supabase/.temp/
+supabase/.branches/

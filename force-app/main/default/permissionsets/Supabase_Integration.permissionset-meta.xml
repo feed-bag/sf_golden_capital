@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Grants access to the Supabase Named Credential for the Approval__c -&gt; Supabase sync, plus access to the Approval_Sync_Failure__c log object.</description>
+    <hasActivationRequired>false</hasActivationRequired>
+    <label>Supabase Integration</label>
+    <externalCredentialPrincipalAccesses>
+        <enabled>true</enabled>
+        <externalCredentialPrincipal>Supabase-Supabase Service Role</externalCredentialPrincipal>
+    </externalCredentialPrincipalAccesses>
+    <objectPermissions>
+        <allowCreate>true</allowCreate>
+        <allowDelete>true</allowDelete>
+        <allowEdit>true</allowEdit>
+        <allowRead>true</allowRead>
+        <modifyAllRecords>false</modifyAllRecords>
+        <object>Approval_Sync_Failure__c</object>
+        <viewAllRecords>true</viewAllRecords>
+    </objectPermissions>
+</PermissionSet>

@@ -3,5 +3,5 @@
     <deploymentStatus>Deployed</deploymentStatus>
     <label>Approval Change</label>
     <pluralLabel>Approval Changes</pluralLabel>
-    <publishBehavior>PublishImmediately</publishBehavior>
+    <publishBehavior>PublishAfterCommit</publishBehavior>
 </CustomObject>

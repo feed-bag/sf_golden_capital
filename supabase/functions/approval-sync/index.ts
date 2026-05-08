@@ -45,7 +45,8 @@ const FIELD_MAP: Record<string, string> = {
 };
 
 const SUPABASE_URL = Deno.env.get("SUPABASE_URL")!;
-const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY")!;
+const SERVICE_KEY = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY") ?? "";
+const SECRET_KEY = Deno.env.get("SUPABASE_SECRET_KEY") ?? "";
 
 const json = (status: number, body: unknown) =>
   new Response(JSON.stringify(body), {
@@ -67,11 +68,19 @@ function transform(rec: Record<string, unknown>, recordId: string) {
 Deno.serve(async (req: Request) => {
   if (req.method !== "POST") return json(405, { error: "method_not_allowed" });
 
-  const bearer = (req.headers.get("authorization") ?? "").replace(/^Bearer\s+/i, "");
+  // Auth: match the apikey header against whichever auth key the project provides.
+  // SF's Named Credential auto-generates its own Authorization (Bearer JWT) for
+  // SecuredEndpoint-type NCs, so we authenticate on apikey alone, which the EC
+  // populates via {!$Credential.Supabase.ServiceKey}. SUPABASE_SERVICE_ROLE_KEY
+  // holds an sb_secret_* on new-key-model projects; SUPABASE_SECRET_KEY is the
+  // alternate env var name on some projects — check both for portability.
   const apikey = req.headers.get("apikey") ?? "";
-  if (!SERVICE_KEY || bearer !== SERVICE_KEY || apikey !== SERVICE_KEY) {
+  const matchesServiceRole = !!SERVICE_KEY && apikey === SERVICE_KEY;
+  const matchesSecret = !!SECRET_KEY && apikey === SECRET_KEY;
+  if (!matchesServiceRole && !matchesSecret) {
     return json(401, { error: "unauthorized" });
   }
+  const ACTIVE_KEY = matchesServiceRole ? SERVICE_KEY : SECRET_KEY;
 
   let body: RequestBody;
   try {
@@ -83,7 +92,7 @@ Deno.serve(async (req: Request) => {
     return json(400, { error: "events_required" });
   }
 
-  const supabase = createClient(SUPABASE_URL, SERVICE_KEY, {
+  const supabase = createClient(SUPABASE_URL, ACTIVE_KEY, {
     auth: { persistSession: false },
   });
 

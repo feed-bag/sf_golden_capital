@@ -66,12 +66,24 @@ private class ApprovalSyncSchedulerTest {
     }
 
     @isTest
-    static void scheduleRegistersCronTrigger() {
+    static void scheduleRegistersCronTriggers() {
+        // Use a unique base name so the test doesn't collide with the real
+        // schedules registered in the org via ApprovalSyncScheduler.schedule().
+        String testBase = 'TEST ApprovalSyncScheduler ' + DateTime.now().getTime();
+        Integer expectedCount = 60 / ApprovalSyncScheduler.STEP_MINUTES;
+
         Test.startTest();
-        String jobId = ApprovalSyncScheduler.schedule();
+        List<String> jobIds = ApprovalSyncScheduler.schedule(testBase);
         Test.stopTest();
 
-        CronTrigger ct = [SELECT Id, CronExpression, State FROM CronTrigger WHERE Id = :jobId];
-        System.assertEquals(ApprovalSyncScheduler.DEFAULT_CRON, ct.CronExpression);
+        System.assertEquals(expectedCount, jobIds.size());
+        String pattern = testBase + ' :%';
+        Integer registered = [SELECT count() FROM CronTrigger WHERE CronJobDetail.Name LIKE :pattern];
+        System.assertEquals(expectedCount, registered);
+
+        // Cleanup so test runs don't accumulate cron triggers under the org's 100-job cap.
+        for (CronTrigger ct : [SELECT Id FROM CronTrigger WHERE CronJobDetail.Name LIKE :pattern]) {
+            System.abortJob(ct.Id);
+        }
     }
 }

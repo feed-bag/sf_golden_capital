@@ -90,6 +90,52 @@ public with sharing class OpportunityDashboardController {
         }
     }
 
+    // Returns every cic_credit__Credit_Report__c whose Contact sits on the Opportunity's Account.
+    // Powers the Credit Reports tab on the Opportunity record page.
+    @AuraEnabled(cacheable=true)
+    public static List<Map<String, Object>> getCreditReportsForOpportunity(Id oppId) {
+        List<Map<String, Object>> result = new List<Map<String, Object>>();
+        if (oppId == null) return result;
+
+        List<Opportunity> opps = [SELECT AccountId FROM Opportunity WHERE Id = :oppId LIMIT 1];
+        if (opps.isEmpty() || opps[0].AccountId == null) return result;
+        Id accountId = opps[0].AccountId;
+
+        Set<Id> contactIds = new Map<Id, Contact>([
+            SELECT Id FROM Contact WHERE AccountId = :accountId
+        ]).keySet();
+        if (contactIds.isEmpty()) return result;
+
+        for (cic_credit__Credit_Report__c r : [
+            SELECT Id, Name, CreatedDate,
+                   cic_credit__Contact__c, cic_credit__Contact__r.Name,
+                   cic_credit__Score__c,
+                   cic_credit__Open_Tradelines__c, cic_credit__Closed_Tradelines__c,
+                   cic_credit__Collections__c, cic_credit__Public_Records__c
+            FROM cic_credit__Credit_Report__c
+            WHERE cic_credit__Contact__c IN :contactIds
+            WITH USER_MODE
+            ORDER BY CreatedDate DESC
+            LIMIT 200
+        ]) {
+            result.add(new Map<String, Object>{
+                'id'              => r.Id,
+                'name'            => r.Name,
+                'recordUrl'       => '/' + r.Id,
+                'createdDate'     => r.CreatedDate,
+                'contactId'       => r.cic_credit__Contact__c,
+                'contactName'     => r.cic_credit__Contact__r != null ? r.cic_credit__Contact__r.Name : null,
+                'contactUrl'      => r.cic_credit__Contact__c != null ? '/' + r.cic_credit__Contact__c : null,
+                'score'           => r.cic_credit__Score__c,
+                'openTradelines'  => r.cic_credit__Open_Tradelines__c,
+                'closedTradelines'=> r.cic_credit__Closed_Tradelines__c,
+                'collections'     => r.cic_credit__Collections__c,
+                'publicRecords'   => r.cic_credit__Public_Records__c
+            });
+        }
+        return result;
+    }
+
     @AuraEnabled(cacheable=true)
     public static PipelineStats getPipelineStats() {
         PipelineStats stats = new PipelineStats();

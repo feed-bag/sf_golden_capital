@@ -427,6 +427,16 @@
     <flexiPageRegions>
         <itemInstances>
             <componentInstance>
+                <componentName>opportunityCreditReports</componentName>
+                <identifier>c_opportunityCreditReports</identifier>
+            </componentInstance>
+        </itemInstances>
+        <name>Facet-credit-reports-tab-body</name>
+        <type>Facet</type>
+    </flexiPageRegions>
+    <flexiPageRegions>
+        <itemInstances>
+            <componentInstance>
                 <componentInstanceProperties>
                     <name>actionNames</name>
                     <valueList>
@@ -765,6 +775,24 @@
                 </componentInstanceProperties>
                 <componentName>flexipage:tab</componentName>
                 <identifier>flexipage_tab7</identifier>
+            </componentInstance>
+        </itemInstances>
+        <itemInstances>
+            <componentInstance>
+                <componentInstanceProperties>
+                    <name>active</name>
+                    <value>false</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>body</name>
+                    <value>Facet-credit-reports-tab-body</value>
+                </componentInstanceProperties>
+                <componentInstanceProperties>
+                    <name>title</name>
+                    <value>Credit Reports</value>
+                </componentInstanceProperties>
+                <componentName>flexipage:tab</componentName>
+                <identifier>flexipage_tab_credit_reports</identifier>
             </componentInstance>
         </itemInstances>
         <itemInstances>

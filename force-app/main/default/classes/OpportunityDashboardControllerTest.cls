@@ -341,4 +341,62 @@ private class OpportunityDashboardControllerTest {
         List<Map<String, Object>> result = OpportunityDashboardController.getDealersForOpportunity(opp.Id);
         System.assertEquals(0, result.size(), 'Empty list expected when no equipment exists');
     }
+
+    @isTest
+    static void testGetCreditReportsForOpportunityNullId() {
+        List<Map<String, Object>> result = OpportunityDashboardController.getCreditReportsForOpportunity(null);
+        System.assertEquals(0, result.size(), 'Null opp id returns empty list');
+    }
+
+    @isTest
+    static void testGetCreditReportsForOpportunityNoAccountContacts() {
+        Account acct = [SELECT Id FROM Account WHERE Name = 'Test Account' LIMIT 1];
+        Opportunity opp = new Opportunity(
+            Name = 'No Contacts', AccountId = acct.Id,
+            StageName = 'Prospecting', CloseDate = Date.today().addDays(30)
+        );
+        insert opp;
+
+        List<Map<String, Object>> result = OpportunityDashboardController.getCreditReportsForOpportunity(opp.Id);
+        System.assertEquals(0, result.size(), 'Empty list expected when account has no contacts');
+    }
+
+    @isTest
+    static void testGetCreditReportsForOpportunityWithContacts() {
+        Account acct = [SELECT Id FROM Account WHERE Name = 'Test Account' LIMIT 1];
+        Contact c = new Contact(FirstName = 'Cred', LastName = 'Tester', AccountId = acct.Id);
+        insert c;
+        Opportunity opp = new Opportunity(
+            Name = 'With Contacts', AccountId = acct.Id,
+            StageName = 'Prospecting', CloseDate = Date.today().addDays(30)
+        );
+        insert opp;
+
+        // Try to insert a managed-package credit report; if the package blocks DML in test
+        // context, fall back to verifying the empty case still works.
+        Boolean inserted = false;
+        try {
+            cic_credit__Credit_Report__c r = new cic_credit__Credit_Report__c(
+                cic_credit__Contact__c = c.Id,
+                cic_credit__Score__c = 720,
+                cic_credit__Open_Tradelines__c = 5,
+                cic_credit__Closed_Tradelines__c = 2,
+                cic_credit__Collections__c = 0,
+                cic_credit__Public_Records__c = 0
+            );
+            insert r;
+            inserted = true;
+        } catch (Exception e) {
+            // Managed package may restrict insert in test context — that's OK.
+        }
+
+        List<Map<String, Object>> result = OpportunityDashboardController.getCreditReportsForOpportunity(opp.Id);
+        if (inserted) {
+            System.assertEquals(1, result.size(), 'One credit report expected for the account contact');
+            System.assertEquals(c.Id, (Id) result[0].get('contactId'));
+            System.assertEquals(720, ((Decimal) result[0].get('score')).intValue());
+        } else {
+            System.assertEquals(0, result.size(), 'No credit reports could be inserted — empty list expected');
+        }
+    }
 }

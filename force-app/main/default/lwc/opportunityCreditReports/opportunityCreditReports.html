@@ -1,0 +1,30 @@
+<template>
+    <lightning-card title="Credit Reports" icon-name="standard:reward">
+        <div class="slds-p-horizontal_small">
+            <template if:true={hasRows}>
+                <lightning-datatable
+                    key-field="id"
+                    data={rows}
+                    columns={columns}
+                    hide-checkbox-column
+                    sorted-by={sortedBy}
+                    sorted-direction={sortedDirection}
+                    onsort={handleSort}
+                    resize-column-disabled>
+                </lightning-datatable>
+            </template>
+            <template if:false={hasRows}>
+                <template if:false={error}>
+                    <p class="slds-text-body_small slds-text-color_weak slds-p-vertical_small">
+                        No credit reports yet — use the Pull Credit action above to pull one.
+                    </p>
+                </template>
+            </template>
+            <template if:true={error}>
+                <p class="slds-text-color_error slds-p-vertical_small">
+                    Could not load credit reports.
+                </p>
+            </template>
+        </div>
+    </lightning-card>
+</template>
